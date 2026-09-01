@@ -1,0 +1,294 @@
+@import "tailwindcss";
+
+/*
+ * Trois couleurs, trois sens, et jamais l'inverse :
+ *   accent (terracotta) — ce sur quoi on peut agir. Boutons, liens, sélection.
+ *   acquis (olive)      — ce qui est déjà gagné. Progression, bonnes réponses.
+ *   alerte (rouge)      — ce qu'il ne faut pas valider.
+ *
+ * Avant cette passe le terracotta portait les trois à lui seul, avec sept
+ * opacités choisies au cas par cas : une barre de progression et un bouton se
+ * disputaient l'œil sans qu'on sache lequel demandait quelque chose. Une
+ * couleur qui signifie tout ne signale plus rien.
+ *
+ * L'olive vient du même monde que la tuile — c'est le vert des oliviers et des
+ * volets du Sud-Ouest, assez sourd pour ne pas crier à côté du crème.
+ */
+:root {
+  --background: #faf7f2;
+  --foreground: #2b2521;
+  --muted: #6b6058;
+  --line: #e2d9cd;
+  --card: #ffffff;
+
+  --accent: #9c4221;
+  --accent-surface: #f6ece6; /* fond très léger, remplace les accent/5 */
+  --accent-soft: #efdcd2;    /* fond marqué, remplace les accent/10 */
+  --accent-line: #d9b3a0;    /* bordure discrète, remplace les accent/40 */
+
+  --acquis: #55603f;
+  --acquis-surface: #eef0e7;
+
+  --alerte: #b91c1c;
+
+  /* Ce qu'on écrit SUR un aplat de couleur. Blanc ici, encre en mode sombre :
+     là-bas le terracotta s'éclaircit pour tenir sur fond noir, et du blanc
+     dessus tomberait à 2,8:1 — illisible en plein soleil comme sous une lampe.
+     Un token plutôt qu'un `text-white` en dur, sinon le défaut revient au
+     prochain bouton écrit. */
+  --sur-plein: #ffffff;
+
+  /* Une couleur par branche. La question que tout le monde pose devant l'arbre
+     est « de quel côté est-il ? », et jusqu'ici toutes les cartes étaient
+     grises : il fallait lire chaque nom pour le savoir.
+     Ce sont des terres et des végétaux, pas des couleurs vives — elles doivent
+     tenir ensemble sur une même page sans faire arc-en-ciel, et cohabiter avec
+     le terracotta qui garde son rôle : l'action. Elles ne portent jamais de
+     texte, seulement un liseré : le contraste n'a donc pas à être lisible,
+     seulement distinguable.
+
+     🔑 « Distinguable » est une mesure, pas une impression. Quatre des neuf
+     couleurs ne l'étaient pas : Vernet et Morel se tenaient à 5,6 ΔE2000,
+     Rouvière et Perrin à 6,4, Chastel et Lanvin à 9,3 — sous le seuil de 10 en
+     dessous duquel deux teintes se confondent sur un trait de six pixels. Un
+     repère qui demande de vérifier n'est pas un repère.
+
+     Les quatre fautives ont été refaites : vert-de-gris, argile claire, bleu
+     lavande, taupe. Écart minimal désormais 11,1, zéro paire sous 10.
+
+     Choisies à la main, et il a fallu l'être : une recherche qui maximise
+     l'écart converge vers du cyan et du magenta — parfait sur le papier,
+     étranger à cette famille. La contrainte de charte ne se calcule pas. */
+  --branche-bardin: #9c4221;      /* terracotta */
+  --branche-rouviere: #55603f;     /* olive */
+  --branche-aubry: #b07d2b;       /* ocre */
+  --branche-vernet: #3f5a6b;  /* ardoise */
+  --branche-delcourt: #7b4b62;  /* prune */
+  --branche-perrin: #2e7d6b;      /* vert-de-gris */
+  --branche-chastel: #c0855c;       /* argile claire */
+  --branche-morel: #7189a8;     /* bleu lavande */
+  --branche-lanvin: #5f5246;    /* taupe */
+}
+
+/* L'application se consulte dehors, en plein soleil du Lot-et-Garonne, et le
+   soir sous une lampe. Le mode sombre garde les mêmes rôles, éclaircis pour
+   tenir le contraste sur fond foncé. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1a1715;
+    --foreground: #ece5dc;
+    --muted: #9a8f84;
+    --line: #3a332e;
+    --card: #241f1c;
+
+    --accent: #d98352;
+    --accent-surface: #2a211c;
+    --accent-soft: #3a2a20;
+    --accent-line: #6b4630;
+
+    --acquis: #a3b183;
+    --acquis-surface: #22261c;
+
+    --alerte: #f87171;
+
+    --sur-plein: #1a1715;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-card: var(--card);
+  --color-accent: var(--accent);
+  --color-accent-surface: var(--accent-surface);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-line: var(--accent-line);
+  --color-acquis: var(--acquis);
+  --color-acquis-surface: var(--acquis-surface);
+  --color-alerte: var(--alerte);
+  --color-sur-plein: var(--sur-plein);
+}
+
+/* Le mode confort : TOUT le site est mesuré en rem, grossir la racine de
+   16 à 20 pixels agrandit donc textes, marges et boutons de 25 % d'un seul
+   coup — les cibles de 44 px passent à 55. Une règle, pas un thème parallèle.
+   La classe est posée avant le premier rendu par le script de démarrage. */
+html.confort {
+  font-size: 20px;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+/*
+ * Le retour au doigt, posé une fois pour toute l'application.
+ *
+ * C'était le vrai défaut de fluidité : entre le moment où l'on touche un bouton
+ * et celui où la page répond, il ne se passait rien. Sur un téléphone, cette
+ * demi-seconde muette fait passer une application rapide pour une application
+ * cassée. Un enfoncement de 2 % suffit à dire « c'est pris ».
+ */
+button,
+summary,
+a[href],
+[role="button"] {
+  transition:
+    background-color 140ms ease-out,
+    border-color 140ms ease-out,
+    color 140ms ease-out,
+    opacity 140ms ease-out,
+    transform 90ms ease-out;
+}
+
+button:active:not(:disabled),
+[role="button"]:active {
+  transform: scale(0.985);
+}
+
+/* Une cible qu'on rate au doigt n'existe pas. Quarante pixels tiennent le pouce
+   sans forcer la mise en page compacte des filtres. */
+button,
+[role="button"] {
+  min-height: 40px;
+}
+
+/* Le contour ne s'affiche qu'au clavier : `:focus-visible` l'épargne à qui
+   navigue au doigt ou à la souris, et le rend indispensable à qui tabule. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* `marker:hidden` de Tailwind vise `::marker`, que les moteurs WebKit
+   n'appliquent pas aux <details>. Samsung Internet — installé d'origine sur
+   tous les Galaxy — affiche donc son triangle noir par-dessus notre pastille.
+   Ce pseudo-élément-là, lui, est respecté. */
+summary::-webkit-details-marker {
+  display: none;
+}
+
+/*
+ * L'arbre entier : le niveau de détail, et ce qui se touche.
+ *
+ * Passé un certain dézoom, les patronymes et les années ne sont plus que du
+ * gris — illisibles, mais toujours dessinés à chaque geste. Les retirer rend
+ * l'arbre franchement plus fluide sur un téléphone et, surtout, plus lisible :
+ * de loin on vient voir la FORME de la famille, pas les dates. C'est la règle
+ * de base du dessin de cartes — n'afficher que ce qui se lit à la distance où
+ * l'on se trouve.
+ */
+.arbre-loin .a2 {
+  display: none;
+}
+.arbre-tres-loin .a1,
+.arbre-tres-loin .poignee {
+  display: none;
+}
+
+.arbre-loin a,
+.arbre-loin .poignee,
+[data-plier],
+svg a {
+  cursor: pointer;
+}
+
+/* La poignée de pli s'éclaire au survol : sur un dessin figé, c'est le seul
+   indice qu'un élément répond au doigt. */
+.poignee:hover rect {
+  fill: var(--accent-surface);
+  stroke: var(--accent);
+}
+
+/* Le mouvement est un confort, jamais un passage obligé. */
+@media (prefers-reduced-motion: reduce) {
+  button,
+  summary,
+  a[href],
+  [role="button"] {
+    transition: none;
+  }
+  button:active:not(:disabled),
+  [role="button"]:active {
+    transform: none;
+  }
+}
+
+.serif {
+  font-family: ui-serif, Georgia, "Times New Roman", serif;
+}
+
+/* Le quiz est le seul écran animé de l'application : ailleurs, du mouvement sur
+   une fiche de famille serait du bruit. Deux gestes suffisent — quelque chose
+   qui arrive, quelque chose qui presse. */
+@keyframes monte {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes battement {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.45; }
+}
+
+.animate-monte {
+  animation: monte 220ms ease-out both;
+}
+
+.animate-battement {
+  animation: battement 900ms ease-in-out infinite;
+}
+
+/* Les cotillons de fin de partie : ils tombent une fois et s'arrêtent
+   (`forwards`), sans jamais repartir. Une pluie qui recommence en boucle
+   cesserait d'être une fête pour devenir un papier peint. */
+@keyframes cotillon {
+  0% {
+    transform: translateY(-10vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(105vh) rotate(540deg);
+    opacity: 0;
+  }
+}
+
+.animate-cotillon {
+  animation: cotillon linear forwards;
+}
+
+/* Une animation qui pulse en continu peut déclencher un malaise. Ce réglage
+   système existe pour ça, et il coûte quatre lignes de le respecter. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-monte,
+  .animate-battement,
+  .animate-cotillon {
+    animation: none;
+  }
+}
+
+/* Nom des lieux-dits sur la carte : posé sur le fond IGN sans cartouche, avec
+   un liseré clair pour rester lisible sur les routes et les bois. */
+.leaflet-tooltip.etiquette-lieu {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+  font-family: ui-serif, Georgia, serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--foreground);
+  text-shadow:
+    0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff, 0 0 6px #fff;
+  white-space: nowrap;
+}
+
+.leaflet-tooltip.etiquette-lieu::before {
+  display: none; /* la flèche du cartouche, inutile sans cartouche */
+}

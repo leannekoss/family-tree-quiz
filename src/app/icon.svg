@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Arbre de famille">
+  <!--
+    Deux parents, un trait, un enfant : le plus vieux schéma de filiation qui
+    soit, et le seul motif qui reste lisible à seize pixels dans un onglet.
+
+    Un arbre dessiné (tronc, feuillage) devient une tache brune illisible à
+    cette taille ; trois disques et deux traits épais tiennent, parce qu'il n'y
+    a rien à distinguer d'autre que des pleins.
+
+    Fond plein plutôt que transparent : l'icône se pose aussi bien sur une barre
+    d'onglets claire que sombre, sans avoir à en dessiner deux versions.
+  -->
+  <rect width="64" height="64" rx="14" fill="#9c4221"/>
+  <g stroke="#faf7f2" stroke-width="5" stroke-linecap="round" fill="#faf7f2">
+    <line x1="19" y1="19" x2="45" y2="19"/>
+    <line x1="32" y1="19" x2="32" y2="43"/>
+    <circle cx="19" cy="19" r="7.5" stroke="none"/>
+    <circle cx="45" cy="19" r="7.5" stroke="none"/>
+    <circle cx="32" cy="47" r="8.5" stroke="none"/>
+  </g>
+</svg>
