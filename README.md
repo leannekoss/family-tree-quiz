@@ -10,6 +10,18 @@ Construit pour une vraie famille de ~700 fiches et ~80 membres actifs. Publié i
 
 > 🇫🇷 L'interface est en français.
 
+## Aperçu
+
+*Captures prises sur la démo — toutes les personnes sont fictives.*
+
+| Accueil | Le quiz |
+|---|---|
+| ![Accueil](docs/screenshots/accueil.png) | ![Quiz](docs/screenshots/quiz.png) |
+
+| L'arbre | Une fiche | La carte |
+|---|---|---|
+| ![Arbre](docs/screenshots/arbre.png) | ![Fiche](docs/screenshots/fiche.png) | ![Carte](docs/screenshots/lieux.png) |
+
 ## Fonctionnalités
 
 - **Fiches** : filiation, unions, photos (bucket privé, liens signés), anecdotes, sources.
@@ -58,6 +70,8 @@ Développé avec [Claude Code](https://claude.com/claude-code).
 - `src/lib/contact.ts` — le contact du gardien (WhatsApp, fiche).
 - `src/app/rejoindre/page.tsx`, `src/app/layout.tsx` — les textes d'accueil et le nom du site.
 - Cherchez `Vernet` dans `src/` pour trouver les textes de la famille de démonstration.
+- **Importer votre vraie famille** (FamilySearch, GEDCOM, recherche d'actes assistée
+  par IA — Léonore, archives départementales) : [docs/IMPORT-GENEALOGIE.md](docs/IMPORT-GENEALOGIE.md).
 
 ## Garde-fou
 

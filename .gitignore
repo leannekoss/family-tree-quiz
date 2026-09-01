@@ -42,3 +42,4 @@ next-env.d.ts
 
 # Fichiers de travail du CLI Supabase
 supabase/.temp/
+.gstack/

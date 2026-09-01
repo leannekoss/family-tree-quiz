@@ -84,3 +84,10 @@ insert into unions (p1_id, p2_id) values
   ('a0000000-0000-4000-8000-000000000023', 'a0000000-0000-4000-8000-000000000024');
 
 insert into app_config (key, value) values ('invite_code', 'famille2026'), ('acces_ouvert', 'oui') on conflict (key) do update set value = excluded.value;
+
+-- Quelques maisons fictives pour la carte
+insert into places (id, name, occupants, outside, note, lat, lon, commune, geo_precision, geo_source, resume) values
+  (1, 'Le Moulin', 'Camille, Léonie', false, null, 44.532, 0.765, 'Monflanquin', 'approximatif', 'seed démo', 'La maison mère du camp du Moulin, dans la famille depuis 1890.'),
+  (2, 'La Bastide', 'Les Chastel', false, null, 44.541, 0.772, 'Monflanquin', 'approximatif', 'seed démo', 'Fondée par Julien Chastel et Magdeleine, berceau du second camp.'),
+  (3, 'Les Ormeaux', 'Zoé et les siens', false, null, 44.512, 0.748, 'Montagnac-sur-Lède', 'approximatif', 'seed démo', 'La ferme des étés d''enfance, célèbre pour son tilleul.');
+select setval(pg_get_serial_sequence('places','id'), 10);
