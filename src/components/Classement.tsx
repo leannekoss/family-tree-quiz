@@ -5,7 +5,7 @@ import Link from "next/link";
 import { deposerScore } from "@/app/quiz/actions";
 import { couleurDe } from "@/lib/branches";
 import Avatar from "@/components/Avatar";
-import { EMOJI_CAMP } from "@/lib/famille";
+import { BRANCHE_INVITES, EMOJI_CAMP } from "@/lib/famille";
 
 export type Ligne = {
   pseudo: string;
@@ -80,7 +80,7 @@ export default function Classement({
   partie?: { score: number; justes: number; total: number };
 }) {
   const [pseudo, setPseudo] = useState("");
-  const [branche, setBranche] = useState("");
+  const [branche, setBranche] = useState(BRANCHE_INVITES ?? "");
   const [etat, setEtat] = useState<"prêt" | "envoi" | "fait">("prêt");
   const [erreur, setErreur] = useState<string | null>(null);
   const [charge, setCharge] = useState(false);
@@ -162,7 +162,7 @@ export default function Classement({
               className="mt-1.5 w-full rounded-lg border border-line bg-card px-3 py-2 text-base outline-none focus:border-accent"
             >
               <option value="">— aucune, je joue pour moi —</option>
-              {nomsBranches.map((b) => (
+              {(BRANCHE_INVITES ? [BRANCHE_INVITES, ...nomsBranches] : nomsBranches).map((b) => (
                 <option key={b} value={b}>
                   {b}
                 </option>

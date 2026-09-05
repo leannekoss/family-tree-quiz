@@ -40,6 +40,13 @@ export const CARTE: { fond: "ign" | "osm"; centre: [number, number] } = {
   centre: [51.5014, -0.1419], // palais de Buckingham
 };
 
+/**
+ * Une branche de plus au classement, pour ceux qui ne sont d'aucune : les
+ * visiteurs de la démo jouent « pour les invités » et se retrouvent entre
+ * eux au tableau. Null pour une vraie famille : tout le monde a une branche.
+ */
+export const BRANCHE_INVITES: string | null = "Les invités";
+
 /** Les trois promesses de la page d'entrée, sous le bouton. */
 export const PROMESSES: string[] = [
   "1 725 fiches, un quiz, la carte des résidences royales",

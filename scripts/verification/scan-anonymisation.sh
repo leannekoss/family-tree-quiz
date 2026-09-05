@@ -12,7 +12,7 @@ if grep -rniE "$MOTIFS" --exclude-dir=node_modules --exclude-dir=.next --exclude
 fi
 
 # Emails réels (tout ce qui n'est pas example.com / agentmail générique)
-if grep -rnoE "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=.git --include="*.ts" --include="*.tsx" --include="*.sql" . | grep -v "example.com\|exemple.fr\|votre-inbox@agentmail.to" ; then
+if grep -rnoE "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=.git --include="*.ts" --include="*.tsx" --include="*.sql" . | grep -v "example.com\|exemple.fr\|demo.invalid\|votre-inbox@agentmail.to" ; then
   echo "❌ Adresse email réelle détectée — NE PAS PUSHER." >&2
   exit 1
 fi
