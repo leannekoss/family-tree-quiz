@@ -30,6 +30,16 @@ export const NOM_GARDIEN = "le gardien de l'arbre";
  */
 export const CODE_PUBLIC: string | null = "windsor";
 
+/**
+ * La carte « Qui habite où ». Le Plan IGN nomme les lieux-dits et les fermes
+ * isolées, mais s'arrête aux frontières françaises : une famille européenne
+ * prend OpenStreetMap. `centre` sert quand aucune maison n'est encore posée.
+ */
+export const CARTE: { fond: "ign" | "osm"; centre: [number, number] } = {
+  fond: "osm",
+  centre: [51.5014, -0.1419], // palais de Buckingham
+};
+
 /** Les trois promesses de la page d'entrée, sous le bouton. */
 export const PROMESSES: string[] = [
   "1 725 fiches, un quiz, la carte des résidences royales",

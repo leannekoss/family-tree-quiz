@@ -14,7 +14,7 @@ DOSSIER = RACINE / "data" / "windsor"
 SEED = RACINE / "supabase" / "seed-windsor.sql"
 GARDIEN = "a0000000-0000-4000-8000-0000000000ff"
 ROYAUME_UNI = "Q145"
-NB_LIEUX = 12
+MIN_OCCURRENCES = 4
 
 BRANCHES = [  # (id, nom, camp)
     (21, "Prusse", "Continent"), (22, "Hesse", "Continent"), (23, "Cobourg", "Continent"),
@@ -38,9 +38,12 @@ def lire(nom: str) -> list[dict]:
     return [json.loads(l) for l in (DOSSIER / nom).open(encoding="utf-8") if l.strip()]
 
 
-def lieux_frequents(personnes: list[dict]) -> list[dict]:
-    """Les NB_LIEUX lieux de naissance/décès les plus fréquents ayant des coordonnées."""
+def lieux_retenus(personnes: list[dict]) -> tuple[list[dict], dict]:
+    """Les lieux (naissance ou décès, avec coordonnées) cités au moins MIN_OCCURRENCES fois,
+    plus le premier lieu de naissance de chaque branche : toutes les branches ont un point.
+    Rend la liste des lieux et la table qid Wikidata → id de place (1..n)."""
     occurrences = collections.Counter()
+    par_branche = collections.defaultdict(collections.Counter)
     infos = {}
     for p in personnes:
         for l in p["P19"] + p["P20"]:
@@ -48,8 +51,15 @@ def lieux_frequents(personnes: list[dict]) -> list[dict]:
                 continue
             occurrences[l["qid"]] += 1
             infos[l["qid"]] = l
-    lieux = []
-    for q, n in sorted(occurrences.items(), key=lambda kv: (-kv[1], int(kv[0][1:])))[:NB_LIEUX]:
+        for l in p["P19"]:
+            if l["coord"] and p["branch_id"] is not None:
+                par_branche[p["branch_id"]][l["qid"]] += 1
+    retenus = {q for q, n in occurrences.items() if n >= MIN_OCCURRENCES}
+    for compteur in par_branche.values():
+        if compteur:
+            retenus.add(compteur.most_common(1)[0][0])
+    lieux, par_qid = [], {}
+    for q in sorted(retenus, key=lambda q: (-occurrences[q], int(q[1:]))):
         l = infos[q]
         m = re.match(r"^Point\(([-\d.eE]+) ([-\d.eE]+)\)$", l["coord"])
         if not m:
@@ -57,9 +67,21 @@ def lieux_frequents(personnes: list[dict]) -> list[dict]:
         nom = l["label_fr"] or l["label_en"]
         if not nom:
             raise ValueError(f"lieu {q} sans libellé")
-        lieux.append({"name": nom, "lon": float(m.group(1)), "lat": float(m.group(2)),
-                      "outside": l["pays"] != ROYAUME_UNI, "occurrences": n})
-    return lieux
+        lon, lat = float(m.group(1)), float(m.group(2))
+        # `outside` = hors d'Europe : posé sur la carte mais pas dans le cadre de
+        # départ, sinon New York et Rio tassent tout le continent en une grappe.
+        lieux.append({"name": nom, "lon": lon, "lat": lat,
+                      "outside": not (35 <= lat <= 72 and -25 <= lon <= 45), "occurrences": occurrences[q]})
+        par_qid[q] = len(lieux)
+    return lieux, par_qid
+
+
+def place_de(p: dict, par_qid: dict) -> int | None:
+    """Le lieu d'une personne : sa naissance si elle est sur la carte, sinon son décès."""
+    for l in p["P19"] + p["P20"]:
+        if l["qid"] in par_qid:
+            return par_qid[l["qid"]]
+    return None
 
 
 def main() -> None:
@@ -102,17 +124,26 @@ def main() -> None:
         lignes.append(f"  ({sql(u['p1_id'])}, {sql(u['p2_id'])}, 'mariage', {sql(u['date_display'])})")
     L.append(",\n".join(lignes) + "\non conflict do nothing;\n")
 
-    lieux = lieux_frequents(personnes)
+    lieux, lieux_par_qid = lieux_retenus(personnes)
     L.append("insert into places (id, name, lat, lon, commune, geo_precision, geo_source, outside) values")
     L.append(",\n".join(
         f"  ({i + 1}, {sql(l['name'])}, {l['lat']}, {l['lon']}, null, 'exact', 'Wikidata P625', {sql(l['outside'])})"
         for i, l in enumerate(lieux)) + "\non conflict (id) do nothing;")
     L.append(f"select setval(pg_get_serial_sequence('places','id'), {len(lieux) + 1});\n")
 
-    L.append("insert into app_config (key, value) values ('invite_code', 'A_DEFINIR'), ('acces_ouvert', 'oui'), "
+    L.append("-- Troisième passe : chaque personne sur sa maison (naissance, sinon décès).")
+    relies = 0
+    for p in personnes:
+        pid = place_de(p, lieux_par_qid)
+        if pid is not None:
+            L.append(f"update people set place_id = {pid} where id = {sql(p['id'])};")
+            relies += 1
+    L.append("")
+
+    L.append("insert into app_config (key, value) values ('invite_code', 'windsor'), ('acces_ouvert', 'oui'), "
              "('lecture_seule', 'oui') on conflict (key) do update set value = excluded.value;")
     SEED.write_text("\n".join(L) + "\n", encoding="utf-8")
-    print(f"{SEED} : {SEED.stat().st_size / 1024:.0f} Ko · {len(personnes) + 1} personnes · {len(unions)} unions · {len(lieux)} lieux")
+    print(f"{SEED} : {SEED.stat().st_size / 1024:.0f} Ko · {len(personnes) + 1} personnes · {len(unions)} unions · {len(lieux)} lieux · {relies} personnes reliées à un lieu")
     for l in lieux:
         print(f"  lieu : {l['name']} ({l['occurrences']}) hors RU = {l['outside']}")
 

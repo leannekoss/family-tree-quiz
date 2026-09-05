@@ -1,5 +1,6 @@
 "use client";
 
+import { CARTE } from "@/lib/famille";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { supabaseBrowser } from "@/lib/supabase/client";
@@ -39,7 +40,14 @@ const IGN_TILES =
   "&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&TILEMATRIXSET=PM" +
   "&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png";
 
-const CENTRE: [number, number] = [51.5014, -0.1419]; // Buckingham Palace
+const OSM_TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+
+const FONDS = {
+  ign: { url: IGN_TILES, attribution: "© IGN — Géoplateforme", maxZoom: 18 },
+  osm: { url: OSM_TILES, attribution: "© OpenStreetMap contributors", maxZoom: 19 },
+} as const;
+
+const CENTRE = CARTE.centre;
 
 /**
  * Les noms viennent de la base et de ce que la famille y écrit. Leaflet attend
@@ -186,7 +194,8 @@ export default function PlacesMap({
 
       map = L.map(container.current, { scrollWheelZoom: false });
       carte.current = map;
-      L.tileLayer(IGN_TILES, { maxZoom: 18, attribution: "© IGN — Géoplateforme" }).addTo(map);
+      const fond = FONDS[CARTE.fond];
+      L.tileLayer(fond.url, { maxZoom: fond.maxZoom, attribution: fond.attribution }).addTo(map);
 
       // Après un déplacement la carte est reconstruite : on remet la vue là où
       // elle était, sinon on perd son zoom à chaque correction.
