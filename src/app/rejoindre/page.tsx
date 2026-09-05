@@ -3,7 +3,7 @@
 import { useState, use } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import Aide from "@/components/Aide";
-import { BULLETIN, NOM_GARDIEN, SOUS_TITRE, TITRE } from "@/lib/famille";
+import { BULLETIN, CODE_PUBLIC, NOM_GARDIEN, SOUS_TITRE, TITRE } from "@/lib/famille";
 
 /**
  * L'adresse est assemblée au clic plutôt qu'écrite dans la page : /rejoindre est
@@ -37,7 +37,7 @@ export default function Rejoindre({
 
   const [nom, setNom] = useState("");
   const [email, setEmail] = useState("");
-  const [code, setCode] = useState(presetCode ?? "");
+  const [code, setCode] = useState(CODE_PUBLIC ?? presetCode ?? "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -194,6 +194,7 @@ export default function Rejoindre({
           </Aide>
         </label>
 
+        {CODE_PUBLIC === null && (
         <label className="block">
           <span className="mb-1.5 block text-sm font-medium">Code famille</span>
           <input
@@ -214,6 +215,7 @@ export default function Rejoindre({
             auriez choisi : vous n&apos;avez rien créé ici.
           </Aide>
         </label>
+        )}
 
         {error && (
           // `role="alert"` : sans lui, quelqu'un qui n'y voit pas se trompe de

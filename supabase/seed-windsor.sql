@@ -3511,4 +3511,4 @@ insert into places (id, name, lat, lon, commune, geo_precision, geo_source, outs
 on conflict (id) do nothing;
 select setval(pg_get_serial_sequence('places','id'), 13);
 
-insert into app_config (key, value) values ('invite_code', 'A_DEFINIR'), ('acces_ouvert', 'oui'), ('lecture_seule', 'oui') on conflict (key) do update set value = excluded.value;
+insert into app_config (key, value) values ('invite_code', 'windsor'), ('acces_ouvert', 'oui'), ('lecture_seule', 'oui') on conflict (key) do update set value = excluded.value;

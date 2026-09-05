@@ -24,6 +24,13 @@ export const BULLETIN: string | null = null;
 export const NOM_GARDIEN = "le gardien de l'arbre";
 
 /**
+ * Démo publique : le code famille est connu de tous, on ne le demande donc pas.
+ * Renseigné, le formulaire d'entrée cache le champ et l'envoie lui-même ; null
+ * (une vraie famille), le code se transmet de vive voix et se saisit.
+ */
+export const CODE_PUBLIC: string | null = "windsor";
+
+/**
  * La racine par défaut de l'arbre : Victoria. C'est l'uuid5 de son QID
  * Wikidata (Q9439) dans l'espace de noms DNS — la même clé que l'import.
  */
