@@ -5,22 +5,31 @@ généré depuis l'arbre (« qui est la mère de… ? », « de quelle branche d
 des maisons de famille, les anniversaires, un journal des contributions — et un accès par
 simple code famille, sans mot de passe individuel.
 
-Construit pour une vraie famille de ~700 fiches et ~80 membres actifs. Publié ici avec une
-**famille de démonstration entièrement fictive** (les Vernet-Delcourt).
+Construit pour une vraie famille de ~700 fiches et ~80 membres actifs. Publié ici avec deux
+jeux de données de démonstration : **la descendance de la reine Victoria** (1 725 fiches,
+488 portraits, importés de Wikidata et Wikimedia Commons) et une petite **famille fictive**
+(les Vernet-Delcourt, 54 fiches) pour démarrer en local.
 
 > 🇫🇷 L'interface est en français.
 
+## 👑 Démo en ligne
+
+**[la-famille-windsor.vercel.app](https://la-famille-windsor.vercel.app)** — entrez d'un clic,
+jouez au quiz, parcourez l'arbre depuis Victoria, la carte des résidences royales et le
+classement. Lecture seule : les visiteurs jouent et corrigent rien. Données Wikidata (CC0),
+photos Wikimedia Commons créditées sur la page `/credits`.
+
 ## Aperçu
 
-*Captures prises sur la démo — toutes les personnes sont fictives.*
+*Captures prises sur la démo Windsor.*
 
-| Accueil | Le quiz |
-|---|---|
-| ![Accueil](docs/screenshots/accueil.png) | ![Quiz](docs/screenshots/quiz.png) |
-
-| L'arbre | Une fiche | La carte |
+| Entrée | Une fiche | Le classement |
 |---|---|---|
-| ![Arbre](docs/screenshots/arbre.png) | ![Fiche](docs/screenshots/fiche.png) | ![Carte](docs/screenshots/lieux.png) |
+| ![Entrée](docs/screenshots/windsor/rejoindre.png) | ![Fiche](docs/screenshots/windsor/fiche-victoria.png) | ![Classement](docs/screenshots/windsor/classement.png) |
+
+| Le quiz | La carte |
+|---|---|
+| ![Quiz](docs/screenshots/windsor/quiz.png) | ![Carte](docs/screenshots/windsor/lieux.png) |
 
 ## Fonctionnalités
 
@@ -50,26 +59,34 @@ Développé avec [Claude Code](https://claude.com/claude-code).
 
 ## Démarrage
 
-1. **Créer un projet [Supabase](https://supabase.com)**, puis appliquer le schéma :
+1. **Créer un projet [Supabase](https://supabase.com)**, puis appliquer dans l'ordre :
    - `supabase/migrations/0001_init.sql` (schéma complet : tables, RLS, fonctions)
    - `supabase/migrations/0002_storage.sql` (bucket photos privé)
-   - `supabase/seed-demo.sql` (la famille fictive de démonstration, 54 fiches)
+   - `supabase/migrations/0003_demo_windsor.sql` (camps par colonne, mode lecture seule)
+   - un seed : `supabase/seed-windsor.sql` (la démo, 1 725 fiches) **ou**
+     `supabase/seed-demo.sql` (les Vernet-Delcourt, 54 fiches, code `famille2026`)
+   - facultatif : `supabase/seed-windsor-scores.sql` (un classement déjà peuplé)
 2. **Configurer l'app** :
    ```bash
    cp .env.example .env.local   # y mettre l'URL et la clé anon du projet
    npm install
    npm run dev
    ```
-3. **Entrer** : sur `/rejoindre`, code famille `famille2026` (défini dans `seed-demo.sql`).
+3. **Entrer** sur `/rejoindre`. Avec le seed Windsor, un clic suffit (`CODE_PUBLIC` dans
+   `src/lib/famille.ts`) ; avec les Vernet-Delcourt, code famille `famille2026`.
+4. **Photos de la démo Windsor** : `scripts/import-wikidata/4_photos.py --ecrire`
+   (variables `SUPABASE_URL` et `SUPABASE_SERVICE_KEY`) télécharge et crédite les 488
+   portraits Commons. Voir `scripts/import-wikidata/LISEZ-MOI.md`.
 
 ## Adapter à votre famille
 
-- `src/lib/branches.ts` — les branches, leurs couleurs (`src/app/globals.css`) et les deux
-  « camps » du duel.
-- `src/lib/pays.ts` — le quiz « pays » : remplacez les questions par votre région.
-- `src/lib/contact.ts` — le contact du gardien (WhatsApp, fiche).
-- `src/app/rejoindre/page.tsx`, `src/app/layout.tsx` — les textes d'accueil et le nom du site.
-- Cherchez `Vernet` dans `src/` pour trouver les textes de la famille de démonstration.
+Tout ce qui nomme la famille est dans **un seul fichier : `src/lib/famille.ts`** — le titre,
+les branches et leurs couleurs, les deux camps du duel, la racine de l'arbre, le gardien et
+ses liens, le fond de carte (IGN pour la France, OpenStreetMap ailleurs), les questions
+« pays » du quiz, le code d'entrée public ou non. Voir [docs/SELF-HOSTING.md](docs/SELF-HOSTING.md).
+
+- `src/lib/contact.ts` — le numéro WhatsApp du gardien, s'il y en a un.
+- `supabase/seed-demo.sql` — le patron d'un seed : mêmes colonnes pour votre famille.
 - **Importer votre vraie famille** (FamilySearch, GEDCOM, recherche d'actes assistée
   par IA — Léonore, archives départementales) : [docs/IMPORT-GENEALOGIE.md](docs/IMPORT-GENEALOGIE.md).
 
