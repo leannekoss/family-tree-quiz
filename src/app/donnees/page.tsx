@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { lienWhatsApp } from "@/lib/contact";
+import { CONTACT_WHATSAPP, lienWhatsApp } from "@/lib/contact";
+import { BULLETIN, NOM_GARDIEN } from "@/lib/famille";
 
 export const metadata = {
   title: "Où sont vos données",
@@ -77,8 +78,7 @@ export default function Donnees() {
         <p className="mt-2 text-sm">
           Le prénom, le nom, le nom d&apos;usage, un surnom, les dates de
           naissance et de décès, les parents, la maison, une photo, quelques
-          notes. C&apos;est ce que contient déjà le bulletin{" "}
-          <em>La Gazette</em>, que la famille se passe depuis des années.
+          notes.{BULLETIN ? <> C&apos;est ce que contient déjà le bulletin <em>{BULLETIN}</em>, que la famille se passe depuis des années.</> : null}
         </p>
         <p className="mt-2 text-sm">
           Pour ceux qui se connectent, s&apos;ajoutent leur adresse email et,
@@ -98,7 +98,7 @@ export default function Donnees() {
           </Point>
           <Point>
             Quand quelqu&apos;un change les parents d&apos;une fiche, un message
-            en prévient Camille. Ce message contient un nom et un lien, et transite
+            en prévient {NOM_GARDIEN}. Ce message contient un nom et un lien, et transite
             par un service d&apos;envoi d&apos;emails.
           </Point>
         </ul>
@@ -127,15 +127,20 @@ export default function Donnees() {
           </Point>
         </ul>
         <p className="mt-3 text-sm">
-          Une seule adresse pour tout cela : Camille, par{" "}
-          <a
-            href={lienWhatsApp()}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline underline-offset-4"
-          >
-            WhatsApp
-          </a>
+          Une seule adresse pour tout cela : {NOM_GARDIEN}
+          {CONTACT_WHATSAPP ? (
+            <>
+              , par{" "}
+              <a
+                href={lienWhatsApp()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-4"
+              >
+                WhatsApp
+              </a>
+            </>
+          ) : null}
           .
         </p>
       </section>

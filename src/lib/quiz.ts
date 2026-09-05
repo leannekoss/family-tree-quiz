@@ -1,6 +1,7 @@
 import { fullName, agrees } from "@/lib/types";
 import { questionsPays } from "@/lib/pays";
 import { campDe } from "@/lib/branches";
+import { BULLETIN, INDICE_CAMPS } from "@/lib/famille";
 
 export type QuizPerson = {
   id: string;
@@ -294,9 +295,9 @@ const branchQuestion: Generator = (p, all) => {
     kind: "branche",
     prompt: `De quelle branche descend ${fullName(p)} ?`,
     // L'indice nomme les deux camps du classement, et pas seulement les
-    // branches : c'est le même partage, et quelqu'un qui vient de lire « Moulin
+    // branches : c'est le même partage, et quelqu'un qui vient de lire « Windsor
     // mène de 743 points » doit retrouver ici les mots qu'il vient de voir.
-    hint: "Six branches viennent des enfants d'Augustin Vernet et Blanche Delcourt — c'est le camp du Moulin. Chastel, Morel et Lanvin, les cousins du Lot-et-Garonne, forment celui de la Bastide.",
+    hint: INDICE_CAMPS,
     personId: p.id,
     ...assemble(p.branch, wrong),
   };
@@ -413,8 +414,8 @@ const childrenQuestion: Generator = (p, all) => {
  * Le but : faire rire ET obliger à regarder les quatre photos.
  */
 const INTRUS_RIGOLOS = [
-  { nom: "La poule de Monflanquin", image: "/quiz/poule.svg" },
-  { nom: "Le mouton du Moulin", image: "/quiz/mouton.svg" },
+  { nom: "La poule du château", image: "/quiz/poule.svg" },
+  { nom: "Le mouton de Balmoral", image: "/quiz/mouton.svg" },
   { nom: "Colonel Moutarde", image: "/quiz/colonel.svg" },
   { nom: "Le chat de la maison", image: "/quiz/chat.svg" },
 ];
@@ -519,7 +520,7 @@ function jouable(p: QuizPerson): boolean {
  *
  * 🔑 Le champ a été rempli à l'import, pas par la famille. Relevé le 22/08/2026
  * sur les six cent cinquante-sept fiches : cent soixante-quinze portent une
- * note, dont **cent dix-sept sont une référence de source** (« La Gazette n° 12,
+ * note, dont **cent dix-sept sont une référence de source** (« bulletin n° 12,
  * page 35 », cent dix fois) et **cinquante-deux une annotation de travail**
  * (« nom déduit de la fratrie, non lu dans le bulletin », quarante-quatre
  * fois). Quatre seulement racontent quelque chose — un métier, un cimetière.
@@ -535,8 +536,17 @@ function jouable(p: QuizPerson): boolean {
  * — savoir d'où vient une information est le cœur du travail. Elle est
  * seulement écartée du JEU.
  */
-const NOTE_DE_TRAVAIL =
-  /la gazette n°|page \d+|descendance|déduit|non lu|bulletin|gedcom|à (?:con|vé)firmer|à vérifier|non prouvé|supposé|incertain|hypothèse|rattachement|transcription|au chargement|corrigé le|sources? généalogique/i;
+const NOTE_DE_TRAVAIL = new RegExp(
+  [
+    // Le nom du bulletin, s'il y en a un, échappé pour la regex.
+    ...(BULLETIN ? [BULLETIN.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")] : []),
+    "n°", "page \\d+", "descendance", "déduit", "non lu", "bulletin", "gedcom",
+    "à (?:con|vé)firmer", "à vérifier", "non prouvé", "supposé", "incertain",
+    "hypothèse", "rattachement", "transcription", "au chargement", "corrigé le",
+    "sources? généalogique",
+  ].join("|"),
+  "i",
+);
 
 /**
  * Une note ne sert au jeu que si elle raconte la personne. Dans le doute on
@@ -588,7 +598,7 @@ function aRetenir(p: QuizPerson, all: QuizPerson[]): string | undefined {
 
   if (p.branch) {
     const camp = campDe(p.branch);
-    bouts.push(camp ? `branche ${p.branch}, camp ${camp === "Moulin" ? "du Moulin" : "de la Bastide"}` : `branche ${p.branch}`);
+    bouts.push(camp ? `branche ${p.branch}, camp ${camp}` : `branche ${p.branch}`);
   }
 
   if (bouts.length === 0) return undefined;

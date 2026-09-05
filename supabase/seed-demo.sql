@@ -1,15 +1,17 @@
 -- seed-demo.sql — famille FICTIVE Vernet-Delcourt pour la démo.
 -- À charger après les migrations : psql < seed-demo.sql, ou via l'éditeur SQL Supabase.
-insert into branches (id, name) values
-  (8, 'Bardin'),
-  (9, 'Rouvière'),
-  (10, 'Aubry'),
-  (11, 'Vernet'),
-  (12, 'Delcourt'),
-  (13, 'Perrin'),
-  (14, 'Chastel'),
-  (15, 'Morel'),
-  (16, 'Lanvin')
+-- Le camp de chaque branche (le duel du classement) : six branches du Moulin,
+-- trois de la Bastide. camp_de() le lit ici depuis 0003.
+insert into branches (id, name, camp) values
+  (8, 'Bardin', 'Moulin'),
+  (9, 'Rouvière', 'Moulin'),
+  (10, 'Aubry', 'Moulin'),
+  (11, 'Vernet', 'Moulin'),
+  (12, 'Delcourt', 'Moulin'),
+  (13, 'Perrin', 'Moulin'),
+  (14, 'Chastel', 'Bastide'),
+  (15, 'Morel', 'Bastide'),
+  (16, 'Lanvin', 'Bastide')
 on conflict (id) do nothing;
 select setval(pg_get_serial_sequence('branches','id'), 20);
 

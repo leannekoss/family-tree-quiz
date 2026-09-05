@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase/server";
 type Stats = Record<string, unknown>;
 import FilAriane from "@/components/FilAriane";
+import { SOUS_TITRE } from "@/lib/famille";
 
 export const dynamic = "force-dynamic";
 
@@ -57,12 +58,10 @@ export default async function Famille() {
             Une statistique sans son périmètre est une statistique fausse. */}
         {s.compte?.aieux ? (
           <p className="mt-2 text-sm text-muted">
-            Ces chiffres portent sur la famille depuis la génération d&apos;Édouard
-            Augustin Vernet, né en 1879. Les{" "}
-            <strong>{s.compte.aieux} aïeux plus anciens</strong> — jusqu&apos;à
-            Hambourg et Genève au XVI<sup>e</sup> siècle — n&apos;y sont pas
-            comptés&nbsp;: « Johann porté dix-sept fois » ne dit rien de la
-            famille d&apos;aujourd&apos;hui. On les retrouve depuis les fiches et
+            Ces chiffres portent sur {SOUS_TITRE}. Les{" "}
+            <strong>{s.compte.aieux} aïeux plus anciens</strong> n&apos;y sont pas
+            comptés&nbsp;: un prénom porté dix-sept fois au XVI<sup>e</sup> siècle
+            ne dit rien de la famille d&apos;aujourd&apos;hui. On les retrouve depuis les fiches et
             sur l&apos;arbre.
           </p>
         ) : null}

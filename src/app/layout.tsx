@@ -3,12 +3,13 @@ import { Analytics } from "@vercel/analytics/next";
 import Entete from "@/components/Entete";
 import Pied from "@/components/Pied";
 import "./globals.css";
+import { SOUS_TITRE, TITRE } from "@/lib/famille";
 
 const RESUME =
-  "Qui est qui dans la famille Vernet-Delcourt : les fiches, un quiz et la carte des maisons.";
+  `Qui est qui dans ${SOUS_TITRE} : les fiches, un quiz et la carte des maisons.`;
 
 export const metadata: Metadata = {
-  title: "L'arbre de la famille",
+  title: TITRE,
   description: RESUME,
   robots: { index: false, follow: false },
 
@@ -27,9 +28,9 @@ export const metadata: Metadata = {
    * L'image elle-même est fabriquée par `opengraph-image.tsx`, à côté.
    */
   openGraph: {
-    title: "L'arbre de la famille Vernet-Delcourt",
+    title: TITRE,
     description: RESUME,
-    siteName: "L'arbre de la famille",
+    siteName: TITRE,
     locale: "fr_FR",
     type: "website",
   },

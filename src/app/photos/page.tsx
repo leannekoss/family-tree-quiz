@@ -181,8 +181,8 @@ export default async function Photos() {
       <section className="mt-12 border-t border-line pt-8">
         <h2 className="serif text-xl">Vous en avez beaucoup d&apos;un coup ?</h2>
         <p className="mb-4 mt-1 text-sm text-muted">
-          Chaque fichier nommé d&apos;après la personne — <em>camille-vernet.jpg</em>,{" "}
-          <em>Anna Vernet.jpeg</em> — retrouve sa fiche tout seul. Rien
+          Chaque fichier nommé d&apos;après la personne — <em>alice-de-hesse.jpg</em>,{" "}
+          <em>Alice Hesse.jpeg</em> — retrouve sa fiche tout seul. Rien
           n&apos;est envoyé avant que vous appuyiez sur le bouton.
         </p>
         <BulkPhotos />

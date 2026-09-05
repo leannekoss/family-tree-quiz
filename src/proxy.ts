@@ -30,7 +30,7 @@ export async function proxy(request: NextRequest) {
   // « Où sont mes données » reste lisible sans compte, et c'est le point : on
   // veut savoir où va sa photo avant de la déposer, pas après. Une page qui
   // rassure derrière une porte fermée ne rassure personne.
-  const publique = ["/rejoindre", "/donnees"].some((c) =>
+  const publique = ["/rejoindre", "/donnees", "/credits"].some((c) =>
     request.nextUrl.pathname.startsWith(c),
   );
 

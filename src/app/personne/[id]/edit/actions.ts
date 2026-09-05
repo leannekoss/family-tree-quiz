@@ -6,6 +6,7 @@ import { after } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
 import { prevenirChangementFiliation } from "@/lib/alerte";
 import { fullName } from "@/lib/types";
+import { NOM_GARDIEN } from "@/lib/famille";
 
 const empty = (v: FormDataEntryValue | null) => {
   const s = typeof v === "string" ? v.trim() : "";
@@ -78,7 +79,7 @@ export async function savePerson(id: string, formData: FormData) {
       const auteur = moi?.person
         ? `${moi.person.first_name} ${moi.person.last_name}`
         : "Quelqu'un";
-      if (auteur === "Camille Vernet") return;
+      if (auteur === NOM_GARDIEN) return;
 
       const nom = (p: { first_name: string; last_name: string; married_name?: string | null; sex?: string | null } | null) =>
         p ? fullName(p) : null;

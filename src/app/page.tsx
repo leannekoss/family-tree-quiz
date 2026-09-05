@@ -11,6 +11,7 @@ import FlammeEnDanger from "@/components/FlammeEnDanger";
 import { signedPhotos } from "@/lib/photos";
 import DefiSemaine from "@/components/DefiSemaine";
 import PremiersPas, { type Pas } from "@/components/PremiersPas";
+import { BULLETIN } from "@/lib/famille";
 
 export const dynamic = "force-dynamic";
 
@@ -168,10 +169,10 @@ export default async function Accueil() {
       </Suspense>
 
       {/* La recherche pardonne l'orthographe, mais personne ne le sait avant
-          d'avoir essayé — et devant un nom alsacien, on n'essaie pas. */}
+          d'avoir essayé — et devant un nom étranger, on n'essaie pas. */}
       <Aide titre="Je ne sais pas l&apos;écrire">
         Tapez comme ça se prononce.{" "}
-        <strong>« vernay » trouve Vernet, « delcour » trouve Delcourt.</strong>{" "}
+        <strong>« elisabeth » trouve Elizabeth, « batemberg » trouve Battenberg.</strong>{" "}
         Les accents et les traits d&apos;union n&apos;ont pas d&apos;importance, et
         deux lettres suffisent pour commencer. Cherchez aussi par nom d&apos;épouse :
         les deux mènent à la même fiche.
@@ -223,8 +224,11 @@ export default async function Accueil() {
             rumeur : sachant d'où sort une date, on sait quoi rouvrir quand
             elle est contestée — et le bulletin est chez tout le monde. */}
         <p className="mt-2 text-xs text-muted">
-          Relevé du bulletin <em>La Gazette</em> n° 31, décembre 2025, complété
-          par la famille.
+          {BULLETIN ? (
+            <>Relevé du bulletin <em>{BULLETIN}</em>, complété par la famille.</>
+          ) : (
+            <>Relevé depuis Wikidata, complété par la famille.</>
+          )}
         </p>
 
         {/* Mêmes signes que la barre de navigation, pour les mêmes

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase/server";
 import FilAriane from "@/components/FilAriane";
 import Signaler from "@/components/Signaler";
+import { BULLETIN } from "@/lib/famille";
 
 export const dynamic = "force-dynamic";
 
@@ -113,9 +114,11 @@ export default async function Merci() {
       </section>
 
       <p className="mt-8 text-sm text-muted">
-        Les noms, les dates et les maisons viennent du bulletin{" "}
-        <em>La Gazette</em>, tenu depuis des années par la famille, et de tout ce
-        que chacun ajoute ici depuis.{" "}
+        {BULLETIN ? (
+          <>Les noms, les dates et les maisons viennent du bulletin <em>{BULLETIN}</em>, tenu depuis des années par la famille, et de tout ce que chacun ajoute ici depuis.</>
+        ) : (
+          <>Les noms, les dates et les maisons viennent de ce que chacun ajoute ici.</>
+        )}{" "}
         <Link href="/classement" className="underline underline-offset-4">
           Le classement
         </Link>{" "}

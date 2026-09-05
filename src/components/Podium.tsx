@@ -7,22 +7,21 @@ import { signedPhotos } from "@/lib/photos";
 import Avatar from "@/components/Avatar";
 
 /**
- * Le podium, et ses titres du pays.
+ * Le podium, et ses titres de la couronne.
  *
  * « 1er, 2e, 3e » n'appelle personne. Un titre, si — surtout quand il vient
- * d'ici : on se retrouve en juin dans le Lot-et-Garonne, entre les pruniers
- * d'Agen, les canards et les truffières. « Pruneau d'or » se répète à table,
- * « premier au classement » non.
+ * de la famille : « Couronne d'or » se répète à table, « premier au
+ * classement » non.
  *
  * 🔑 Les titres ne s'accordent pas en genre, et c'est délibéré : « maître » ou
- * « maîtresse » du pruneau obligerait à connaître le sexe de chaque joueur, que
- * le classement ne donne pas — et le lui demander pour une plaisanterie serait
- * disproportionné. Un pruneau n'a pas de genre ; la médaille reste lisible.
+ * « maîtresse » de la couronne obligerait à connaître le sexe de chaque
+ * joueur, que le classement ne demande pas. Une couronne n'a pas de genre ; la
+ * médaille reste lisible.
  */
 const TITRES = [
-  { emoji: "🥇", titre: "Pruneau d'or", quoi: "d'Agen, évidemment" },
-  { emoji: "🥈", titre: "Foie gras d'argent", quoi: "il fallait bien un deuxième" },
-  { emoji: "🥉", titre: "Truffe de bronze", quoi: "elle se mérite" },
+  { emoji: "🥇", titre: "Couronne d'or", quoi: "la seule qui compte" },
+  { emoji: "🥈", titre: "Sceptre d'argent", quoi: "il fallait bien un deuxième" },
+  { emoji: "🥉", titre: "Orbe de bronze", quoi: "elle se mérite" },
 ];
 
 /**

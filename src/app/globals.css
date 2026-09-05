@@ -48,8 +48,8 @@
      seulement distinguable.
 
      🔑 « Distinguable » est une mesure, pas une impression. Quatre des neuf
-     couleurs ne l'étaient pas : Vernet et Morel se tenaient à 5,6 ΔE2000,
-     Rouvière et Perrin à 6,4, Chastel et Lanvin à 9,3 — sous le seuil de 10 en
+     couleurs ne l'étaient pas : deux paires se tenaient à 5,6 et 6,4 ΔE2000,
+     une troisième à 9,3 — sous le seuil de 10 en
      dessous duquel deux teintes se confondent sur un trait de six pixels. Un
      repère qui demande de vérifier n'est pas un repère.
 
@@ -59,18 +59,18 @@
      Choisies à la main, et il a fallu l'être : une recherche qui maximise
      l'écart converge vers du cyan et du magenta — parfait sur le papier,
      étranger à cette famille. La contrainte de charte ne se calcule pas. */
-  --branche-bardin: #9c4221;      /* terracotta */
-  --branche-rouviere: #55603f;     /* olive */
-  --branche-aubry: #b07d2b;       /* ocre */
-  --branche-vernet: #3f5a6b;  /* ardoise */
-  --branche-delcourt: #7b4b62;  /* prune */
-  --branche-perrin: #2e7d6b;      /* vert-de-gris */
-  --branche-chastel: #c0855c;       /* argile claire */
-  --branche-morel: #7189a8;     /* bleu lavande */
-  --branche-lanvin: #5f5246;    /* taupe */
+  --branche-prusse: #3f5a6b;      /* ardoise */
+  --branche-hesse: #7b4b62;       /* prune */
+  --branche-cobourg: #55603f;     /* olive */
+  --branche-edouard: #9c4221;     /* terracotta */
+  --branche-albany: #7189a8;      /* bleu lavande */
+  --branche-connaught: #2e7d6b;   /* vert-de-gris */
+  --branche-battenberg: #b07d2b;  /* ocre */
+  --branche-schleswig: #c0855c;   /* argile claire */
+  --branche-argyll: #5f5246;      /* taupe */
 }
 
-/* L'application se consulte dehors, en plein soleil du Lot-et-Garonne, et le
+/* L'application se consulte dehors, en plein soleil d'un jardin de juin, et le
    soir sous une lampe. Le mode sombre garde les mêmes rôles, éclaircis pour
    tenir le contraste sur fond foncé. */
 @media (prefers-color-scheme: dark) {

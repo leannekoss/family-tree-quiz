@@ -22,6 +22,7 @@ import {
   garderRecord,
   type Partie,
 } from "@/lib/partie";
+import { THEME_PAYS } from "@/lib/famille";
 
 const neuve = (questions: Question[]): Partie => ({
   questions,
@@ -371,7 +372,7 @@ export default function QuizGame({
             <>
               {" "}
               {pays === 1 ? "L'une d'elles porte" : `${pays} d'entre elles portent`}{" "}
-              sur le Lot-et-Garonne.
+              sur {THEME_PAYS}.
             </>
           )}{" "}
           Répondre vite rapporte davantage, et les bonnes réponses d&apos;affilée

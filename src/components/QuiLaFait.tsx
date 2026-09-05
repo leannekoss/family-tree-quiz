@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FICHE_GARDIEN, LINKEDIN } from "@/lib/contact";
+import { BULLETIN, NOM_GARDIEN } from "@/lib/famille";
 
 /**
  * Qui a fait ce site, et où le suivre.
@@ -12,7 +13,7 @@ import { FICHE_GARDIEN, LINKEDIN } from "@/lib/contact";
  * nom de plateforme — on clique une personne, ou une suite.
  *
  * 🔑 Deux liens et non un, parce que ce sont deux publics. Le cousin qui lit
- * « fait par Camille » veut savoir QUI c'est : il va sur la fiche, dans l'arbre,
+ * « fait par le gardien » veut savoir QUI c'est : il va sur la fiche, dans l'arbre,
  * là où il se situe par rapport à lui. Celui que le site intrigue veut voir ce
  * que cette personne fabrique d'autre : il va ailleurs. Les fondre en un seul
  * lien obligerait à choisir lequel des deux on déçoit.
@@ -23,27 +24,36 @@ import { FICHE_GARDIEN, LINKEDIN } from "@/lib/contact";
  */
 export default function QuiLaFait() {
   const chemin = usePathname();
-  const dehors = chemin.startsWith("/rejoindre") || chemin.startsWith("/donnees");
+  const dehors = chemin.startsWith("/rejoindre") || chemin.startsWith("/donnees") || chemin.startsWith("/credits");
 
   return (
     <>
       Fait par{" "}
       {dehors ? (
-        <strong>Camille</strong>
+        <strong>{NOM_GARDIEN}</strong>
       ) : (
         <Link href={`/personne/${FICHE_GARDIEN}`} className="underline underline-offset-4">
-          Camille
+          {NOM_GARDIEN}
         </Link>
       )}
-      , à partir du bulletin <em>La Gazette</em> et de ce que la famille y ajoute.{" "}
-      <a
-        href={LINKEDIN}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex min-h-[44px] items-center font-medium text-accent underline underline-offset-4"
-      >
-        Suivez-moi pour la suite des aventures →
-      </a>
+      {BULLETIN ? (
+        <>, à partir du bulletin <em>{BULLETIN}</em> et de ce que la famille y ajoute.</>
+      ) : (
+        <>, à partir de ce que la famille y ajoute.</>
+      )}
+      {LINKEDIN && (
+        <>
+          {" "}
+          <a
+            href={LINKEDIN}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-[44px] items-center font-medium text-accent underline underline-offset-4"
+          >
+            Suivez-moi pour la suite des aventures →
+          </a>
+        </>
+      )}
     </>
   );
 }

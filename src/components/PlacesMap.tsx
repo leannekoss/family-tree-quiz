@@ -39,7 +39,7 @@ const IGN_TILES =
   "&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&TILEMATRIXSET=PM" +
   "&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/png";
 
-const CENTRE: [number, number] = [44.5333, 0.7667]; // Monflanquin
+const CENTRE: [number, number] = [51.5014, -0.1419]; // Buckingham Palace
 
 /**
  * Les noms viennent de la base et de ce que la famille y écrit. Leaflet attend
@@ -773,7 +773,7 @@ function AjouterMaison({
           <input
             value={commune}
             onChange={(e) => setCommune(e.target.value)}
-            placeholder="Monflanquin"
+            placeholder="Windsor"
             className="w-full rounded-lg border border-line bg-background px-3 py-2 text-base outline-none focus:border-accent"
           />
         </label>

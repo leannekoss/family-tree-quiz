@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { NOM_FAMILLE, TITRE } from "@/lib/famille";
 
 /**
  * La vignette qui s'affiche quand le lien arrive sur WhatsApp.
@@ -18,7 +19,7 @@ import { ImageResponse } from "next/og";
  */
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "L'arbre de la famille Vernet-Delcourt";
+export const alt = TITRE;
 
 export default function Image() {
   return new ImageResponse(
@@ -40,7 +41,7 @@ export default function Image() {
         }}
       >
         <div style={{ fontSize: 30, color: "#6b6058", letterSpacing: 1 }}>
-          FAMILLE VERNET-DELCOURT
+          {`FAMILLE ${NOM_FAMILLE.toUpperCase()}`}
         </div>
         <div
           style={{

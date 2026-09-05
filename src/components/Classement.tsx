@@ -5,6 +5,7 @@ import Link from "next/link";
 import { deposerScore } from "@/app/quiz/actions";
 import { couleurDe } from "@/lib/branches";
 import Avatar from "@/components/Avatar";
+import { EMOJI_CAMP } from "@/lib/famille";
 
 export type Ligne = {
   pseudo: string;
@@ -42,16 +43,10 @@ export type LigneCamp = {
 };
 
 /**
- * Un blason par camp : il se lit avant le nom, comme un maillot.
- *
- * Deux maisons, deux toits. Le duel oppose le Moulin à la Bastide — les deux
- * maisons fondatrices de la famille — et non une maison à une région :
- * c'est sous ces noms-là que la famille se désigne.
+ * Un blason par camp : il se lit avant le nom, comme un maillot. Défini dans
+ * `famille.ts`, avec les camps eux-mêmes.
  */
-const BLASON: Record<string, string> = {
-  Moulin: "🏰",
-  "Bastide": "🏡",
-};
+const BLASON = EMOJI_CAMP;
 
 const NOM = "arbre.pseudo";
 const BRANCHE = "arbre.branche";
@@ -61,7 +56,7 @@ const BRANCHE = "arbre.branche";
  * Le classement, et le formulaire pour y entrer.
  *
  * Le nom est demandé une seule fois puis retenu sur l'appareil : personne ne
- * doit retaper « Camille » à chaque partie. Il n'est pas pré-rempli avec
+ * doit retaper son nom à chaque partie. Il n'est pas pré-rempli avec
  * l'adresse email — c'est le seul nom que la base connaisse, et l'écrire ici
  * reviendrait à la publier devant toute la famille.
  */
@@ -243,9 +238,7 @@ export default function Classement({
           la forme d'un duel — et un duel, ça se raconte à table.
 
           Le partage n'est pas inventé : c'est celui que le quiz énonce déjà
-          dans ses indices. Six branches descendent des enfants d'Henry
-          Vernet et Blanche Delcourt ; Chastel, Morel et Lanvin sont
-          les cousins du Lot-et-Garonne.
+          dans ses indices (`CAMPS`, dans `famille.ts`).
 
           Masqué tant qu'un seul camp a joué : annoncer un duel où personne ne
           s'oppose ne fait pas envie, ça fait vide. */}

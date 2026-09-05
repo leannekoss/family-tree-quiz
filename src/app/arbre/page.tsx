@@ -5,6 +5,7 @@ import ArbreZoom from "@/components/ArbreZoom";
 import { dessinerArbre, type Personne, type Union } from "@/lib/dessinArbre";
 import { dessinerAscendance } from "@/lib/dessinAscendance";
 import { toutCharger } from "@/lib/tout";
+import { RACINE } from "@/lib/famille";
 
 export const dynamic = "force-dynamic";
 
@@ -15,10 +16,9 @@ export const dynamic = "force-dynamic";
  * Ici on voit la FORME de la famille : les branches larges, les rameaux courts,
  * et où l'on se situe dans sept cents descendants. On arrive sur soi, on remonte.
  *
- * 🔑 La racine par défaut est Fernand Vernet (1852) et ce n'est pas un
- * hasard : c'est l'ancêtre commun des deux camps du duel. Sa fille Magdeleine
- * a fondé la Bastide en épousant Julien Chastel, son fils Henry a fait le Moulin.
- * Partir de lui, c'est montrer que les deux maisons sont un seul arbre.
+ * 🔑 La racine par défaut (`RACINE`, dans `famille.ts`) est l'ancêtre commun
+ * des deux camps du duel. Partir de là, c'est montrer que les deux camps sont
+ * un seul arbre.
  *
  * Le PREMIER dessin se fait ici, au serveur : la page arrive pleine, sans
  * attendre que le navigateur ait fini d'hydrater quoi que ce soit. Les
@@ -26,7 +26,6 @@ export const dynamic = "force-dynamic";
  * la même fonction (`lib/dessinArbre`), parce qu'un aller-retour au serveur à
  * chaque geste remettrait le zoom à zéro et rendrait l'exploration impossible.
  */
-const RACINE_FERNAND = "a0000000-0000-4000-8000-000000000001";
 
 export default async function Arbre({
   searchParams,
@@ -68,7 +67,7 @@ export default async function Arbre({
   ]);
   // En ascendance, on part de SOI par défaut : c'est la question qu'on se pose
   // — « d'où je viens ? ». En descendance, de l'aïeul commun.
-  const parDefaut = ancetres ? (moiId ?? RACINE_FERNAND) : RACINE_FERNAND;
+  const parDefaut = ancetres ? (moiId ?? RACINE) : RACINE;
   const racineId =
     racine && gens.some((p) => p.id === racine) ? racine : parDefaut;
 
@@ -126,7 +125,7 @@ export default async function Arbre({
           </Link>
         </div>
 
-        {/* 🔑 Cet arbre dessine une DESCENDANCE : partir de Fernand, c'est ne
+        {/* 🔑 Cet arbre dessine une DESCENDANCE : partir de la racine, c'est ne
             jamais voir ses ancêtres. Les cent quatre-vingt-cinq aïeux arrivés
             du GEDCOM — Montclar, Rozel, Valadier, la souche allemande — sont
             tous EN AMONT de lui, donc invisibles ici. Le seul moyen de les
@@ -148,9 +147,9 @@ export default async function Arbre({
               </Link>
             ) : null;
           })()}
-          {racineId !== RACINE_FERNAND && (
+          {racineId !== RACINE && (
             <Link href="/arbre" className="rounded-lg border border-line bg-card px-3 py-1.5">
-              Revenir à Fernand
+              Revenir à la racine
             </Link>
           )}
         </div>
@@ -170,9 +169,8 @@ export default async function Arbre({
       />
 
       <p className="mt-3 text-sm text-muted">
-        Chaque carte porte le liseré de sa branche. La descendance de Fernand
-        réunit les deux maisons du duel : le Moulin par son fils Henry, la Bastide
-        par sa fille Magdeleine.
+        Chaque carte porte le liseré de sa branche. La descendance de la racine
+        réunit les deux camps du duel.
       </p>
     </div>
   );

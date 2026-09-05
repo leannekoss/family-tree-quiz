@@ -1,8 +1,9 @@
 import Link from "next/link";
+import { EMOJI_CAMP } from "@/lib/famille";
 
 export type CampDefi = { camp: string; photos: number };
 
-const BLASON: Record<string, string> = { Moulin: "🏰", "Bastide": "🏡" };
+const BLASON = EMOJI_CAMP;
 
 /**
  * Le défi de la semaine : la chasse aux visages, camp contre camp.
@@ -13,7 +14,7 @@ const BLASON: Record<string, string> = { Moulin: "🏰", "Bastide": "🏡" };
  * une place à prendre chaque semaine.
  *
  * 🔑 C'est la gamification qui sert le vrai but du site : trois cent
- * soixante-dix visages manquent, et la Bastide n'en a qu'une poignée. On ne fait
+ * soixante-dix visages manquent, et un des camps n'en a qu'une poignée. On ne fait
  * pas gagner des points pour des points — on fait remplir l'arbre.
  */
 export default function DefiSemaine({

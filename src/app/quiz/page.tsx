@@ -3,10 +3,11 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import { supabaseServer } from "@/lib/supabase/server";
 import { buildQuiz, type QuizPerson } from "@/lib/quiz";
-import { campDe } from "@/lib/branches";
+import { campAdverse, campDe } from "@/lib/branches";
 import { signedPhotos } from "@/lib/photos";
 import QuizGame from "@/components/QuizGame";
 import Aide from "@/components/Aide";
+import { THEME_PAYS } from "@/lib/famille";
 
 export const dynamic = "force-dynamic";
 
@@ -259,8 +260,8 @@ export default async function Quiz({
       {stricte ? (
         <p className="mt-4 rounded-lg border border-accent-line bg-accent-surface px-3 py-2.5 text-sm">
           <strong>Uniquement les {stricte}</strong> —{" "}
-          {/* Le compte est dit AVANT de jouer, jamais découvert à la fin. Les
-              Lanvin sont onze : une partie sur leur branche ne fera pas dix
+          {/* Le compte est dit AVANT de jouer, jamais découvert à la fin. Une
+              petite branche fait onze fiches : une partie sur leur branche ne fera pas dix
               questions, et laisser croire le contraire pour se rattraper avec
               des cousins d'ailleurs serait exactement le « succès avec 14 %
               sauté en silence » qu'on refuse partout ailleurs sur ce site. */}
@@ -284,7 +285,7 @@ export default async function Quiz({
         <p className="mt-4 rounded-lg border border-accent-line bg-accent-surface px-3 py-2.5 text-sm">
           <strong>Niveau 2</strong> —{" "}
           {campDe(maBranche)
-            ? `${campDe(maBranche) === "Moulin" ? "la Bastide" : "le Moulin"} et les aïeux`
+            ? `le camp ${campAdverse(campDe(maBranche)!)} et les aïeux`
             : "les aïeux et toutes les branches"}
           . Les questions les plus dures du jeu.{" "}
           <Link href="/quiz" className="underline underline-offset-4">
@@ -295,8 +296,7 @@ export default async function Quiz({
         <p className="mt-4 rounded-lg border border-line bg-card px-3 py-2.5 text-sm">
           <strong>Niveau 1</strong> — quatre questions sur les{" "}
           <strong>{maBranche}</strong>, deux sur les cousins{" "}
-          {campDe(maBranche) === "Bastide" ? "de la Bastide" : "du Moulin"}, deux de
-          pays.{" "}
+          du camp {campDe(maBranche)}, deux sur {THEME_PAYS}.{" "}
           <Link href="/quiz?niveau=2" className="underline underline-offset-4">
             Tenter le niveau 2
           </Link>{" "}

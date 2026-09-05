@@ -16,7 +16,8 @@
 import Link from "next/link";
 import QuiEcrire from "@/components/QuiEcrire";
 import QuiLaFait from "@/components/QuiLaFait";
-import { lienWhatsApp } from "@/lib/contact";
+import { CONTACT_WHATSAPP, lienWhatsApp } from "@/lib/contact";
+import { NOM_FAMILLE } from "@/lib/famille";
 
 export default function Pied() {
   return (
@@ -24,6 +25,7 @@ export default function Pied() {
       <div className="mx-auto max-w-3xl px-4 py-6">
         <QuiEcrire />
 
+        {CONTACT_WHATSAPP && (
         <ul className="mt-3 flex flex-wrap gap-2">
           <li>
             {/* Le bouton porte ce qu'on vient y chercher — « me contacter » —
@@ -39,6 +41,7 @@ export default function Pied() {
             </a>
           </li>
         </ul>
+        )}
 
         {/* « LinkedIn » ne demandait rien et n'obtenait rien : c'était une
             cartouche, pas une invitation. Ce site est aussi un travail — quatre
@@ -57,7 +60,7 @@ export default function Pied() {
             qui voit quoi, comment faire effacer une fiche — et reste lisible
             sans compte : on veut savoir où va sa photo avant de la déposer. */}
         <p className="mt-5 text-xs text-muted">
-          Arbre privé de la famille Vernet-Delcourt. Rien de ce qui est ici
+          Arbre privé de la famille {NOM_FAMILLE}. Rien de ce qui est ici
           n&apos;est visible depuis un moteur de recherche, et tout est hébergé
           en France.{" "}
           <Link href="/donnees" className="inline-flex min-h-[44px] items-center underline underline-offset-4">
@@ -68,6 +71,10 @@ export default function Pied() {
               donc être atteignable, sinon personne ne saura qu'elle existe. */}
           <Link href="/merci" className="inline-flex min-h-[44px] items-center underline underline-offset-4">
             Merci à qui
+          </Link>{" "}
+          ·{" "}
+          <Link href="/credits" className="inline-flex min-h-[44px] items-center underline underline-offset-4">
+            Crédits
           </Link>
           .
         </p>

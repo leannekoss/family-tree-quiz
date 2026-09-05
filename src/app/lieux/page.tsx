@@ -4,6 +4,7 @@ import { supabaseServer } from "@/lib/supabase/server";
 import PlacesMap, { type MapPlace } from "@/components/PlacesMap";
 import { fullName } from "@/lib/types";
 import Aide from "@/components/Aide";
+import { BULLETIN } from "@/lib/famille";
 
 export default async function Lieux({
   searchParams,
@@ -86,7 +87,7 @@ export default async function Lieux({
       <header className="mb-5">
         <h1 className="serif text-2xl font-semibold">Qui habite où</h1>
         <p className="mt-1 text-muted">
-          Les maisons de la famille autour de Monflanquin. Touchez un point pour
+          Les maisons de la famille. Touchez un point pour
           savoir qui s&apos;y trouve.
         </p>
         <Aide titre="Un point est au mauvais endroit">
@@ -127,7 +128,7 @@ export default async function Lieux({
       )}
 
       <p className="mt-8 text-center text-sm text-muted">
-        Relevé sur la carte du <em>La Gazette</em> n° 12, préparée par Camille Vernet.{" "}
+        {BULLETIN ? <>Relevé sur la carte du bulletin <em>{BULLETIN}</em>.</> : <>Relevé par la famille.</>}{" "}
         <Link href="/" className="underline">
           Chercher quelqu&apos;un
         </Link>

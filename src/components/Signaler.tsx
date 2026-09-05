@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { lienWhatsApp } from "@/lib/contact";
+import { CONTACT_WHATSAPP, lienWhatsApp } from "@/lib/contact";
 
 /**
  * « Demander une correction » — la porte de sortie de ceux qui ne corrigeront
@@ -22,6 +22,8 @@ export default function Signaler({ nom }: { nom: string }) {
   // et de le voir se périmer au premier changement d'adresse du site.
   const [url, setUrl] = useState("");
   useEffect(() => setUrl(window.location.href), []);
+
+  if (!CONTACT_WHATSAPP) return null;
 
   const message =
     `Bonjour, il y a une correction à faire sur la fiche de ${nom}.` +

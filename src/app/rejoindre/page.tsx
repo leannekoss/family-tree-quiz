@@ -3,6 +3,7 @@
 import { useState, use } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import Aide from "@/components/Aide";
+import { BULLETIN, NOM_GARDIEN, SOUS_TITRE, TITRE } from "@/lib/famille";
 
 /**
  * L'adresse est assemblée au clic plutôt qu'écrite dans la page : /rejoindre est
@@ -126,12 +127,15 @@ export default function Rejoindre({
           chose, la deuxième dire qui la tient. C'est ce qui distingue une page
           de famille d'un site qui réclame une adresse email. */}
       <h1 className="serif text-2xl font-semibold leading-tight">
-        L&apos;arbre de la famille Vernet-Delcourt
+        {TITRE}
       </h1>
       <p className="mt-2 text-sm">
-        Qui est qui, avant de tous se retrouver en juin dans le Lot-et-Garonne.
-        Tenu par <strong>Camille Vernet</strong>, à partir du bulletin{" "}
-        <em>La Gazette</em> et de ce que la famille y ajoute.
+        Qui est qui dans {SOUS_TITRE}. Tenu par <strong>{NOM_GARDIEN}</strong>
+        {BULLETIN ? (
+          <>, à partir du bulletin <em>{BULLETIN}</em> et de ce que la famille y ajoute.</>
+        ) : (
+          <>, à partir de ce que la famille y ajoute.</>
+        )}
       </p>
 
       <div className="mb-6" />
@@ -152,7 +156,7 @@ export default function Rejoindre({
             type="text"
             required
             autoComplete="name"
-            placeholder="Camille Vernet"
+            placeholder="Prénom Nom"
             value={nom}
             onChange={(e) => setNom(e.target.value)}
             className="w-full rounded-lg border border-line bg-card px-3 py-2.5 text-base outline-none focus:border-accent"

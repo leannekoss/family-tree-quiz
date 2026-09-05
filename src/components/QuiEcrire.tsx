@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FICHE_GARDIEN } from "@/lib/contact";
+import { NOM_GARDIEN } from "@/lib/famille";
 
 /**
- * « Écrivez au gardien », où Camille mène à sa fiche.
+ * « Écrivez au gardien », où le nom mène à sa fiche.
  *
  * Le lien n'apparaît que pour qui est entré. Le pied de page s'affiche aussi
  * sur les deux pages publiques — la connexion et « Où sont vos données » — et
@@ -18,16 +19,16 @@ import { FICHE_GARDIEN } from "@/lib/contact";
  */
 export default function QuiEcrire() {
   const chemin = usePathname();
-  const dehors = chemin.startsWith("/rejoindre") || chemin.startsWith("/donnees");
+  const dehors = chemin.startsWith("/rejoindre") || chemin.startsWith("/donnees") || chemin.startsWith("/credits");
 
   return (
     <p className="text-sm text-muted">
       Une question, une correction, un accès qui ne marche pas ? Écrivez à{" "}
       {dehors ? (
-        <strong>Camille</strong>
+        <strong>{NOM_GARDIEN}</strong>
       ) : (
         <Link href={`/personne/${FICHE_GARDIEN}`} className="underline underline-offset-4">
-          Camille
+          {NOM_GARDIEN}
         </Link>
       )}
       .
