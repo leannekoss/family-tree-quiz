@@ -11,7 +11,7 @@ import FlammeEnDanger from "@/components/FlammeEnDanger";
 import { signedPhotos } from "@/lib/photos";
 import DefiSemaine from "@/components/DefiSemaine";
 import PremiersPas, { type Pas } from "@/components/PremiersPas";
-import { BULLETIN } from "@/lib/famille";
+import { BULLETIN, CODE_PUBLIC } from "@/lib/famille";
 
 export const dynamic = "force-dynamic";
 
@@ -133,11 +133,13 @@ export default async function Accueil() {
       {/* Posée une seule fois, et seulement à qui n'y a pas répondu : sans
           elle, le journal ne peut désigner un contributeur que par le début de
           son adresse email, devant deux cents personnes. */}
-      {!member.person_id && <QuiSuisJe />}
+      {/* Démo publique : les visiteurs ne sont pas dans l'arbre, et la liste
+          des premiers pas demande une photo que la lecture seule refuse. */}
+      {CODE_PUBLIC === null && !member.person_id && <QuiSuisJe />}
 
       {/* Avant tout le reste, et seulement tant qu'il reste un geste à faire :
           c'est la première chose que voit quelqu'un qui n'est jamais revenu. */}
-      {premiersPas?.[0] && <PremiersPas pas={premiersPas[0] as Pas} />}
+      {CODE_PUBLIC === null && premiersPas?.[0] && <PremiersPas pas={premiersPas[0] as Pas} />}
 
       {/* Avant tout le reste : c'est le seul message de cette page qui se périme
           ce soir. La flamme vivait sur la page du quiz, c'est-à-dire seulement

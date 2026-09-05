@@ -28,6 +28,28 @@ function ecrireAuGardien() {
  * liste des adresses autorisées, et l'enjeu est un annuaire familial privé, pas
  * un compte bancaire.
  */
+
+/**
+ * Démo publique : personne ne donne son adresse. On en fabrique une par
+ * appareil, gardée dans localStorage pour retrouver ses scores la fois
+ * suivante. Le domaine `.invalid` est réservé (RFC 2606) : aucun mail ne
+ * partira jamais vers ces adresses. Une vraie famille saisit la sienne.
+ */
+function adresseDeSession(saisie: string): string {
+  if (CODE_PUBLIC === null) return saisie.trim().toLowerCase();
+  const cle = "demo-visiteur";
+  try {
+    const connue = window.localStorage.getItem(cle);
+    if (connue) return connue;
+    const suffixe = crypto.randomUUID().slice(0, 8);
+    const adresse = `visiteur-${suffixe}@demo.invalid`;
+    window.localStorage.setItem(cle, adresse);
+    return adresse;
+  } catch {
+    return `visiteur-${crypto.randomUUID().slice(0, 8)}@demo.invalid`;
+  }
+}
+
 export default function Rejoindre({
   searchParams,
 }: {
@@ -51,7 +73,7 @@ export default function Rejoindre({
     // ne vaut pas « famille », ni comme mot de passe ni à la comparaison. Le
     // code est rangé en minuscules côté base, on saisit dans la même règle.
     const motDePasse = code.trim().toLowerCase();
-    const identity = { email: email.trim().toLowerCase(), password: motDePasse };
+    const identity = { email: adresseDeSession(email), password: motDePasse };
 
     let { error: signInError } = await supabase.auth.signInWithPassword(identity);
 
@@ -99,7 +121,7 @@ export default function Rejoindre({
     // ressemble. Il vient APRÈS l'entrée et n'a pas le droit de la bloquer :
     // quelqu'un qui est dans la famille doit entrer même si son nom ne
     // ressemble à rien de connu. On ne lit donc pas l'erreur.
-    await supabase.rpc("me_declarer", { nom });
+    await supabase.rpc("me_declarer", { nom: nom.trim() || "Visiteur" });
 
     // Rechargement complet plutôt que router.push : la navigation cliente part
     // avant que le cookie de session posé par le SDK soit visible du serveur,
@@ -151,16 +173,19 @@ export default function Rejoindre({
             corrections s'affichaient au journal sous le début de leur adresse.
             Ce formulaire est le seul écran que tout le monde traverse. */}
         <label className="block">
-          <span className="mb-1.5 block text-sm font-medium">Votre nom</span>
+          <span className="mb-1.5 block text-sm font-medium">
+            {CODE_PUBLIC === null ? "Votre nom" : "Votre prénom, pour le classement (facultatif)"}
+          </span>
           <input
             type="text"
-            required
+            required={CODE_PUBLIC === null}
             autoComplete="name"
-            placeholder="Prénom Nom"
+            placeholder={CODE_PUBLIC === null ? "Prénom Nom" : "Visiteur"}
             value={nom}
             onChange={(e) => setNom(e.target.value)}
             className="w-full rounded-lg border border-line bg-card px-3 py-2.5 text-base outline-none focus:border-accent"
           />
+          {CODE_PUBLIC === null && (
           <Aide titre="Et si je ne suis pas dans l&apos;arbre ?">
             <strong>Écrivez quand même votre nom.</strong> Il signera vos
             corrections, que vous ayez une fiche ou non — beaucoup de pièces
@@ -169,8 +194,10 @@ export default function Rejoindre({
             vous demandera laquelle. Les femmes peuvent donner l&apos;un ou
             l&apos;autre de leurs deux noms.
           </Aide>
+          )}
         </label>
 
+        {CODE_PUBLIC === null && (
         <label className="block">
           <span className="mb-1.5 block text-sm font-medium">Votre email</span>
           <input
@@ -187,15 +214,13 @@ export default function Rejoindre({
               laquelle — personne ne pouvait deviner. */}
           <Aide titre="Laquelle ?">
             <strong>Celle que vous voulez, du moment que vous vous en
-            souviendrez.</strong>{" "}
-            {CODE_PUBLIC === null
-              ? "C'est le code de la famille qui ouvre la porte ;"
-              : "Aucun mot de passe, aucun mail de confirmation ;"}{" "}
-            votre adresse sert seulement à signer ce que vous corrigez,
+            souviendrez.</strong> C&apos;est le code de la famille qui ouvre la
+            porte ; votre adresse sert seulement à signer ce que vous corrigez,
             pour qu&apos;on sache à qui demander en cas de doute. Reprenez la
             même la prochaine fois et vous retrouverez votre place.
           </Aide>
         </label>
+        )}
 
         {CODE_PUBLIC === null && (
         <label className="block">
@@ -261,8 +286,9 @@ export default function Rejoindre({
       </ul>
 
       <p className="mt-8 text-xs text-muted">
-        Votre adresse sert uniquement à savoir qui corrige quoi. Aucun email
-        n&apos;est envoyé.
+        {CODE_PUBLIC === null
+          ? "Votre adresse sert uniquement à savoir qui corrige quoi. Aucun email n'est envoyé."
+          : "Aucun compte à créer : votre appareil garde votre place et vos scores."}
       </p>
     </div>
   );
