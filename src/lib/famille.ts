@@ -10,7 +10,7 @@
  */
 
 export const NOM_FAMILLE = "Windsor";
-export const TITRE = "L'arbre des Windsor";
+export const TITRE = "La famille Windsor";
 export const SOUS_TITRE = "la descendance de la reine Victoria";
 
 /**

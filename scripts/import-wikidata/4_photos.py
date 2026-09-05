@@ -20,7 +20,7 @@ Variables d'env requises :
   SUPABASE_SERVICE_KEY   clé service_role (JAMAIS la clé anon)
 """
 
-import json, os, sys, time, io, hashlib
+import json, os, sys, time, io, hashlib, re, html
 from pathlib import Path
 from urllib.parse import quote
 
@@ -41,6 +41,11 @@ ENTETES_COMMONS = {"User-Agent": "family-tree-demo/0.1 (contact@example.com)"}
 MAX_COTE = 1000
 VIGNETTE_COTE = 240
 LOT = 25
+
+
+def texte_brut(fragment: str) -> str:
+    """L'« Artist » de Commons est du HTML (liens, <bdi>) : on n'en garde que le texte."""
+    return html.unescape(re.sub(r"<[^>]+>", "", fragment or "")).strip()
 
 def charger_journal() -> dict:
     """QID → entrée du journal (déjà traité)."""
@@ -178,7 +183,7 @@ def main():
                     "person_id": p["id"],
                     "personne": f"{p['first_name']} {p['last_name']}",
                     "fichier": j.get("fichier", ""),
-                    "auteur": j.get("auteur", ""),
+                    "auteur": texte_brut(j.get("auteur", "")),
                     "licence": j.get("licence", ""),
                     "url": f"https://commons.wikimedia.org/wiki/File:{quote(j.get('fichier', ''))}",
                 })
@@ -253,7 +258,7 @@ def main():
             "person_id": p["id"],
             "personne": f"{p['first_name']} {p['last_name']}",
             "fichier": info["fichier"],
-            "auteur": info["auteur"],
+            "auteur": texte_brut(info["auteur"]),
             "licence": info["licence"],
             "url": f"https://commons.wikimedia.org/wiki/File:{quote(info['fichier'])}",
         })

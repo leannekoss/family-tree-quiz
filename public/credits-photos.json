@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "person_id": "72722f89-dcd3-5705-8de0-241946ee09f3",
+    "personne": "Friedrich (Wilhelm) Hohenzollern",
+    "fichier": "Kaiser Wilhelm II of Germany - 1902.jpg",
+    "auteur": "<bdi>Studio of <a href=\"https://www.wikidata.org/wiki/Q27921748\" class=\"extiw\" title=\"d:Q27921748\"><span title=\"German painter and photographer (1838–1896)\">Thomas Heinrich Voigt</span></a></bdi>",
+    "licence": "Public domain",
+    "url": "https://commons.wikimedia.org/wiki/File:Kaiser%20Wilhelm%20II%20of%20Germany%20-%201902.jpg"
+  },
+  {
+    "person_id": "00926977-36e7-5803-9fcf-6cbf03b410af",
+    "personne": "Victoria Hanovre",
+    "fichier": "Queen Victoria by Bassano.jpg",
+    "auteur": "<bdi><a href=\"https://en.wikipedia.org/wiki/en:Alexander_Bassano\" class=\"extiw\" title=\"w:en:Alexander Bassano\"><span title=\"English photographer (1829-1913)\">Alexander Bassano</span></a></bdi>",
+    "licence": "Public domain",
+    "url": "https://commons.wikimedia.org/wiki/File:Queen%20Victoria%20by%20Bassano.jpg"
+  }
+]
