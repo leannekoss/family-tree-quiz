@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CONTACT_WHATSAPP, lienWhatsApp } from "@/lib/contact";
+import { CONTACT_WHATSAPP, LINKEDIN, lienWhatsApp } from "@/lib/contact";
 import { BULLETIN, NOM_GARDIEN } from "@/lib/famille";
 
 export const metadata = {
@@ -127,7 +127,14 @@ export default function Donnees() {
           </Point>
         </ul>
         <p className="mt-3 text-sm">
-          Une seule adresse pour tout cela : {NOM_GARDIEN}
+          Une seule adresse pour tout cela :{" "}
+          {LINKEDIN ? (
+            <a href={LINKEDIN} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">
+              {NOM_GARDIEN}
+            </a>
+          ) : (
+            NOM_GARDIEN
+          )}
           {CONTACT_WHATSAPP ? (
             <>
               , par{" "}

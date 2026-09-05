@@ -4,7 +4,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 
-MOTIFS='nairac|vernejoul|vernéjoul|feyerabend|hcasalis|casalis|schloesing|persy|monflanquin2026|vienot|parlier|pacquement|kreiss|odier|meynard|steinhel|dietrich|glaubitz|becays|bécays|capdeville|vossius|quincy|gaillardou|tendoux|colombié|bercou'
+MOTIFS='nairac|vernejoul|vernéjoul|feyerabend|hcasalis|schloesing|persy|monflanquin2026|vienot|parlier|pacquement|kreiss|odier|meynard|steinhel|dietrich|glaubitz|becays|bécays|capdeville|vossius|quincy|gaillardou|tendoux|colombié|bercou'
 
 if grep -rniE "$MOTIFS" --exclude-dir=node_modules --exclude-dir=.next --exclude-dir=.git --exclude-dir=__pycache__ --exclude-dir=data --exclude=LICENSE --exclude=scan-anonymisation.sh . ; then
   echo "❌ Données réelles détectées — NE PAS PUSHER." >&2

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FICHE_GARDIEN, LINKEDIN } from "@/lib/contact";
+import { CODE_SOURCE, FICHE_GARDIEN, LINKEDIN } from "@/lib/contact";
 import { BULLETIN, NOM_GARDIEN } from "@/lib/famille";
 
 /**
@@ -29,7 +29,11 @@ export default function QuiLaFait() {
   return (
     <>
       Fait par{" "}
-      {dehors ? (
+      {LINKEDIN ? (
+        <a href={LINKEDIN} target="_blank" rel="noopener noreferrer" className="font-medium underline underline-offset-4">
+          {NOM_GARDIEN}
+        </a>
+      ) : dehors ? (
         <strong>{NOM_GARDIEN}</strong>
       ) : (
         <Link href={`/personne/${FICHE_GARDIEN}`} className="underline underline-offset-4">
@@ -51,6 +55,19 @@ export default function QuiLaFait() {
             className="inline-flex min-h-[44px] items-center font-medium text-accent underline underline-offset-4"
           >
             Suivez-moi pour la suite des aventures →
+          </a>
+        </>
+      )}
+      {CODE_SOURCE && (
+        <>
+          {" "}
+          <a
+            href={CODE_SOURCE}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-[44px] items-center underline underline-offset-4"
+          >
+            Le code est ouvert, faites-en autant pour votre famille →
           </a>
         </>
       )}

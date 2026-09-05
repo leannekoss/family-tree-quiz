@@ -4,6 +4,7 @@ import { useState, use } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import Aide from "@/components/Aide";
 import { BULLETIN, CODE_PUBLIC, NOM_GARDIEN, PROMESSES, SOUS_TITRE, TITRE } from "@/lib/famille";
+import { LINKEDIN } from "@/lib/contact";
 
 /**
  * L'adresse est assemblée au clic plutôt qu'écrite dans la page : /rejoindre est
@@ -11,6 +12,10 @@ import { BULLETIN, CODE_PUBLIC, NOM_GARDIEN, PROMESSES, SOUS_TITRE, TITRE } from
  * moissonner par les robots à spam.
  */
 function ecrireAuGardien() {
+  if (LINKEDIN) {
+    window.open(LINKEDIN, "_blank", "noopener,noreferrer");
+    return;
+  }
   const objet = encodeURIComponent("Accès à l'arbre de la famille");
   const corps = encodeURIComponent(
     "Bonjour,\n\nJe n'arrive pas à me connecter à l'arbre. Peux-tu inscrire cette adresse ?\n\nMerci !",

@@ -20,8 +20,19 @@ export const SOUS_TITRE = "la descendance de la reine Victoria";
  */
 export const BULLETIN: string | null = null;
 
+/**
+ * Qui a fait le site, et où le suivre. La démo est aussi une vitrine : chaque
+ * mention du gardien mène à son LinkedIn, et le code ouvert est à un clic.
+ * Pour une vraie famille : `linkedin` et `code` à null, le nom seul reste.
+ */
+export const AUTEUR: { nom: string; linkedin: string | null; code: string | null } = {
+  nom: "Henri Casalis",
+  linkedin: "https://www.linkedin.com/in/henricasalis/",
+  code: "https://github.com/leannekoss/family-tree-quiz",
+};
+
 /** Celui ou celle qui tient l'arbre, tel qu'on le nomme dans les pages. */
-export const NOM_GARDIEN = "le gardien de l'arbre";
+export const NOM_GARDIEN = AUTEUR.nom;
 
 /**
  * Démo publique : le code famille est connu de tous, on ne le demande donc pas.

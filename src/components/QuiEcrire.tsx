@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FICHE_GARDIEN } from "@/lib/contact";
+import { FICHE_GARDIEN, LINKEDIN } from "@/lib/contact";
 import { NOM_GARDIEN } from "@/lib/famille";
 
 /**
@@ -24,7 +24,11 @@ export default function QuiEcrire() {
   return (
     <p className="text-sm text-muted">
       Une question, une correction, un accès qui ne marche pas ? Écrivez à{" "}
-      {dehors ? (
+      {LINKEDIN ? (
+        <a href={LINKEDIN} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">
+          {NOM_GARDIEN}
+        </a>
+      ) : dehors ? (
         <strong>{NOM_GARDIEN}</strong>
       ) : (
         <Link href={`/personne/${FICHE_GARDIEN}`} className="underline underline-offset-4">

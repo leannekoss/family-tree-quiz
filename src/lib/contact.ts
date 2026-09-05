@@ -8,8 +8,13 @@
  */
 const NUMERO = "";
 
+import { AUTEUR } from "@/lib/famille";
+
 /** Vide : le lien « suivez-moi » ne s'affiche pas. */
-export const LINKEDIN = "";
+export const LINKEDIN = AUTEUR.linkedin ?? "";
+
+/** Vide : le lien vers le code ne s'affiche pas. */
+export const CODE_SOURCE = AUTEUR.code ?? "";
 
 export { FICHE_GARDIEN } from "@/lib/famille";
 
