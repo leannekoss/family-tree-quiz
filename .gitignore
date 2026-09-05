@@ -44,3 +44,4 @@ next-env.d.ts
 supabase/.temp/
 .gstack/
 __pycache__/
+.env.local.dev
