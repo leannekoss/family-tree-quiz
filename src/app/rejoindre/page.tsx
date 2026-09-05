@@ -3,7 +3,7 @@
 import { useState, use } from "react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 import Aide from "@/components/Aide";
-import { BULLETIN, CODE_PUBLIC, NOM_GARDIEN, SOUS_TITRE, TITRE } from "@/lib/famille";
+import { BULLETIN, CODE_PUBLIC, NOM_GARDIEN, PROMESSES, SOUS_TITRE, TITRE } from "@/lib/famille";
 
 /**
  * L'adresse est assemblée au clic plutôt qu'écrite dans la page : /rejoindre est
@@ -187,8 +187,11 @@ export default function Rejoindre({
               laquelle — personne ne pouvait deviner. */}
           <Aide titre="Laquelle ?">
             <strong>Celle que vous voulez, du moment que vous vous en
-            souviendrez.</strong> C&apos;est le code de la famille qui ouvre la
-            porte ; votre adresse sert seulement à signer ce que vous corrigez,
+            souviendrez.</strong>{" "}
+            {CODE_PUBLIC === null
+              ? "C'est le code de la famille qui ouvre la porte ;"
+              : "Aucun mot de passe, aucun mail de confirmation ;"}{" "}
+            votre adresse sert seulement à signer ce que vous corrigez,
             pour qu&apos;on sache à qui demander en cas de doute. Reprenez la
             même la prochaine fois et vous retrouverez votre place.
           </Aide>
@@ -252,9 +255,9 @@ export default function Rejoindre({
           concluront que ça ne marche pas. On vient ici pour entrer, pas pour
           lire ce que le site promet ; le texte reste, il passe après le geste. */}
       <ul className="mt-6 space-y-1.5 rounded-xl border border-line bg-card px-4 py-3 text-sm">
-        <li>Plus de 400 fiches, un quiz, la carte des maisons</li>
-        <li>Invisible depuis Google, hébergé en France</li>
-        <li>Rien à créer, rien à recevoir, rien à retenir</li>
+        {PROMESSES.map((p) => (
+          <li key={p}>{p}</li>
+        ))}
       </ul>
 
       <p className="mt-8 text-xs text-muted">

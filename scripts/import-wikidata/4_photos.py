@@ -37,7 +37,9 @@ PERSONNES = DATA / "personnes.jsonl"
 JOURNAL = DATA / "photos.jsonl"
 CREDITS = RACINE / "public" / "credits-photos.json"
 
-ENTETES_COMMONS = {"User-Agent": "family-tree-demo/0.1 (contact@example.com)"}
+# Wikimedia exige un User-Agent identifiable avec un moyen de contact : un
+# libellé générique reçoit 403 sur upload.wikimedia.org et 429 sur l'API.
+ENTETES_COMMONS = {"User-Agent": "family-tree-quiz/0.1 (https://github.com/leannekoss/family-tree-quiz)"}
 MAX_COTE = 1000
 VIGNETTE_COTE = 240
 LOT = 25
@@ -63,6 +65,19 @@ def sauver_journal(journal: dict):
         for e in journal.values():
             f.write(json.dumps(e, ensure_ascii=False) + "\n")
 
+def get_poli(url: str, **kw) -> requests.Response:
+    """GET Commons : sur 429, attendre ce que le serveur demande (ou 15 s) et réessayer, 3 fois."""
+    for essai in range(3):
+        r = requests.get(url, headers=ENTETES_COMMONS, **kw)
+        if r.status_code != 429:
+            r.raise_for_status()
+            return r
+        attente = int(r.headers.get("Retry-After", "15") or 15)
+        print(f"  ⏸ 429 Commons, pause {attente} s", file=sys.stderr)
+        time.sleep(attente)
+    r.raise_for_status()
+    return r
+
 def commons_info(nom_fichier: str) -> dict | None:
     """Récupère l'URL de la vignette 1000 px et les métadonnées de licence."""
     titre = f"File:{nom_fichier}"
@@ -76,9 +91,7 @@ def commons_info(nom_fichier: str) -> dict | None:
         "format": "json",
     }
     try:
-        r = requests.get("https://commons.wikimedia.org/w/api.php",
-                         params=params, headers=ENTETES_COMMONS, timeout=30)
-        r.raise_for_status()
+        r = get_poli("https://commons.wikimedia.org/w/api.php", params=params, timeout=30)
         pages = r.json().get("query", {}).get("pages", {})
         for page in pages.values():
             ii = page.get("imageinfo", [{}])[0]
@@ -175,10 +188,10 @@ def main():
     credits_list = []
 
     for i, p in enumerate(personnes):
-        if p["qid"] in journal:
+        if p["qid"] in journal and journal[p["qid"]].get("ok"):
             # Récupérer les crédits existants
             j = journal[p["qid"]]
-            if j.get("ok"):
+            if True:
                 credits_list.append({
                     "person_id": p["id"],
                     "personne": f"{p['first_name']} {p['last_name']}",
@@ -208,7 +221,7 @@ def main():
 
         # 2. Télécharger la vignette
         try:
-            r = requests.get(info["thumb_url"], headers=ENTETES_COMMONS, timeout=60)
+            r = get_poli(info["thumb_url"], timeout=60)
             r.raise_for_status()
             img_data = r.content
         except Exception as e:

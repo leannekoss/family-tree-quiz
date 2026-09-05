@@ -17,7 +17,7 @@ import Link from "next/link";
 import QuiEcrire from "@/components/QuiEcrire";
 import QuiLaFait from "@/components/QuiLaFait";
 import { CONTACT_WHATSAPP, lienWhatsApp } from "@/lib/contact";
-import { NOM_FAMILLE } from "@/lib/famille";
+import { CODE_PUBLIC, NOM_FAMILLE } from "@/lib/famille";
 
 export default function Pied() {
   return (
@@ -60,9 +60,18 @@ export default function Pied() {
             qui voit quoi, comment faire effacer une fiche — et reste lisible
             sans compte : on veut savoir où va sa photo avant de la déposer. */}
         <p className="mt-5 text-xs text-muted">
-          Arbre privé de la famille {NOM_FAMILLE}. Rien de ce qui est ici
-          n&apos;est visible depuis un moteur de recherche, et tout est hébergé
-          en France.{" "}
+          {CODE_PUBLIC === null ? (
+            <>
+              Arbre privé de la famille {NOM_FAMILLE}. Rien de ce qui est ici
+              n&apos;est visible depuis un moteur de recherche, et tout est
+              hébergé en France.
+            </>
+          ) : (
+            <>
+              Démonstration publique sur la famille {NOM_FAMILLE}, en lecture
+              seule, hébergée en France.
+            </>
+          )}{" "}
           <Link href="/donnees" className="inline-flex min-h-[44px] items-center underline underline-offset-4">
             Où sont vos données
           </Link>{" "}

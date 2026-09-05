@@ -30,6 +30,13 @@ export const NOM_GARDIEN = "le gardien de l'arbre";
  */
 export const CODE_PUBLIC: string | null = "windsor";
 
+/** Les trois promesses de la page d'entrée, sous le bouton. */
+export const PROMESSES: string[] = [
+  "1 725 fiches, un quiz, la carte des résidences royales",
+  "Une démo publique, hébergée en France",
+  "Rien à créer, rien à recevoir, rien à retenir",
+];
+
 /**
  * La racine par défaut de l'arbre : Victoria. C'est l'uuid5 de son QID
  * Wikidata (Q9439) dans l'espace de noms DNS — la même clé que l'import.

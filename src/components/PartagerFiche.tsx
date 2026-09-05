@@ -1,5 +1,6 @@
 "use client";
 
+import { CODE_PUBLIC } from "@/lib/famille";
 import { useState } from "react";
 
 /**
@@ -107,6 +108,7 @@ export default function PartagerFiche({
           sur toute capture d'écran. Celui qui partage le connaît — il l'a tapé
           pour entrer. On lui rappelle de le transmettre, on ne le publie pas à
           sa place. */}
+      {CODE_PUBLIC === null && (
       <p className="mb-3 flex items-start gap-2 rounded-lg border border-accent-line bg-accent-surface px-3 py-2.5 text-sm">
         <span aria-hidden>🔑</span>
         <span>
@@ -126,6 +128,7 @@ export default function PartagerFiche({
           )}
         </span>
       </p>
+      )}
 
       <div className="flex flex-wrap items-center gap-2">
         {/* `wa.me` ouvre l'application sur téléphone et WhatsApp Web sur
