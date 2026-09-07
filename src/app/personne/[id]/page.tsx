@@ -20,7 +20,7 @@ import SurLesPhotos, { type Apparition } from "@/components/SurLesPhotos";
 import type { Parente as LienParente } from "@/lib/parente";
 import Aide from "@/components/Aide";
 import FilAriane from "@/components/FilAriane";
-import { fullName, lifeSpan, ageLisible, type Sibling } from "@/lib/types";
+import { fullName, lifeSpan, ageLisible, lireDate, de } from "@/lib/types";
 
 // `branch_id` sert la couleur du liseré dans l'arbre : c'est ce qui répond,
 // sans lire un nom, à « il est de quel côté ? ».
@@ -52,14 +52,36 @@ export default async function Fiche({
     { data: history },
     { data: lien },
   ] = await Promise.all([
-      supabase.rpc("siblings", { target: id }),
+      // La fratrie se lit directement dans `people`, avec les deux parents de
+      // chacun et leur prénom : c'est ce qui permet de dire de quel côté vient
+      // un demi-frère. Le RPC siblings() rendait « demi » sans dire par qui,
+      // et une tante a lu une demi-sœur comme la fille de la seconde épouse.
+      person.father_id || person.mother_id
+        ? supabase
+            .from("people")
+            .select(
+              `${CARD_FIELDS}, father_id, mother_id, father:father_id(first_name, last_name), mother:mother_id(first_name, last_name)`,
+            )
+            .or(
+              [
+                person.father_id && `father_id.eq.${person.father_id}`,
+                person.mother_id && `mother_id.eq.${person.mother_id}`,
+              ]
+                .filter(Boolean)
+                .join(","),
+            )
+            .neq("id", id)
+            .order("birth_year", { nullsFirst: false })
+        : Promise.resolve({ data: [] }),
       supabase
         .from("unions")
         .select(`id, kind, date_display, p1:p1_id(${CARD_FIELDS}), p2:p2_id(${CARD_FIELDS})`)
         .or(`p1_id.eq.${id},p2_id.eq.${id}`),
       supabase
         .from("people")
-        .select(CARD_FIELDS)
+        .select(
+          `${CARD_FIELDS}, father_id, mother_id, father:father_id(id, first_name, last_name), mother:mother_id(id, first_name, last_name)`,
+        )
         .or(`father_id.eq.${id},mother_id.eq.${id}`)
         .order("birth_year", { nullsFirst: false }),
       supabase
@@ -79,7 +101,17 @@ export default async function Fiche({
 
   const parents = [person.father, person.mother].filter(notNull);
 
-  const spouses = (unions ?? [])
+  // Les unions dans l'ordre du temps : « Diana puis Camilla », pas un
+  // trio. Sans date, en dernier.
+  const spouses = [...(unions ?? [])]
+    .sort((a, b) => {
+      const da = lireDate(a.date_display)?.d.getTime();
+      const db = lireDate(b.date_display)?.d.getTime();
+      if (da === undefined && db === undefined) return 0;
+      if (da === undefined) return 1;
+      if (db === undefined) return -1;
+      return da - db;
+    })
     .map((u) => {
       const other = u.p1?.id === id ? u.p2 : u.p1;
       if (!other) return null;
@@ -100,13 +132,53 @@ export default async function Fiche({
     })
     .filter(notNull);
 
-  // siblings() rend désormais la photo, le nom d'usage et la branche : la
-  // requête qui les cherchait ensuite a disparu, et avec elle un aller-retour
-  // complet vers la base au milieu du rendu.
-  const siblingNodes = ((siblings ?? []) as Sibling[]).map((s) => ({
-    ...s,
-    tag: s.kind === "demi" ? "demi" : null,
-  }));
+  // Un demi-frère est rangé dans un groupe nommé par ses deux parents :
+  // « de Charles, avec Diana ». Il n'est demi que si, du même côté, les
+  // deux parents sont CONNUS et différents : un parent oublié à la saisie
+  // (très courant sur un import de bulletin) ne fait pas un demi-frère, il
+  // reste dans la fratrie sans un mot. Le groupe est vide pour un frère entier.
+  // Le parent commun est sur la page, son prénom suffit ; l'autre n'y est
+  // pas, on le nomme en entier — deux pères prénommés Christian dans la
+  // même famille, et « avec Christian » les confondait.
+  const siblingNodes = (siblings ?? []).map((s) => {
+    const peresDifferents =
+      !!s.father_id && !!person.father_id && s.father_id !== person.father_id;
+    const meresDifferentes =
+      !!s.mother_id && !!person.mother_id && s.mother_id !== person.mother_id;
+    let groupe: string | null = null;
+    if (meresDifferentes && person.father && s.mother) {
+      groupe = `${de(person.father.first_name)}, avec ${s.mother.first_name} ${s.mother.last_name}`;
+    } else if (peresDifferents && person.mother && s.father) {
+      groupe = `${de(person.mother.first_name)}, avec ${s.father.first_name} ${s.father.last_name}`;
+    }
+    return { ...s, groupe };
+  });
+
+  // Les enfants d'un parent recomposé sont groupés par co-parent : sur la
+  // fiche d'une mère remariée, « Enfants de … » alignait les trois enfants
+  // sous « ⚭ premier mari puis second mari », et le cadet se lisait fils
+  // du premier. Le co-parent est nommé par
+  // son prénom s'il est sur la page (un conjoint), en entier sinon. Un seul
+  // co-parent : l'arbre ne groupe rien.
+  // Deux co-parents du même prénom (deux maris prénommés Christian) : le
+  // nom complet pour tous, sinon les deux groupes
+  // fusionnent sous « avec Christian ».
+  const coParents = (children ?? []).map((c) => (c.father_id === id ? c.mother : c.father));
+  // Les conjoints affichés comptent aussi : deux Christian sur la page et
+  // un seul chez les enfants, « avec Christian » ne dirait pas lequel.
+  const personnes = [...coParents.filter(notNull), ...spouses];
+  const homonymes =
+    new Set(personnes.map((p) => p.first_name)).size < new Set(personnes.map((p) => p.id)).size;
+  const childNodes = (children ?? []).map((c, i) => {
+    const co = coParents[i];
+    const enEntier = !co || homonymes || !spouses.some((sp) => sp.id === co.id);
+    return {
+      ...c,
+      groupe: co
+        ? `avec ${co.first_name}${enEntier ? ` ${co.last_name}` : ""}`
+        : "avec un parent non renseigné",
+    };
+  });
 
   // `parente()` ne renseigne la nature du lien que pour SON PROPRE conjoint :
   // pour une alliance — le conjoint d'un cousin — elle rend `lien_kind` vide,
@@ -222,7 +294,7 @@ export default async function Fiche({
   // mille : une fiche de famille nombreuse pesait plus d'un mégaoctet
   // d'images pour des ronds gros comme un ongle. Sur mobile, d'où viennent
   // neuf visites sur dix, c'est la page la plus ouverte du site.
-  const entourage = [...parents, ...spouses, ...siblingNodes, ...(children ?? [])];
+  const entourage = [...parents, ...spouses, ...siblingNodes, ...childNodes];
   const [photosPleines, photosPetites] = await Promise.all([
     signedPhotos(supabase, [person.photo_url]),
     signedPhotos(supabase, entourage.map((p) => p.photo_url), { petit: true }),
@@ -380,7 +452,7 @@ export default async function Fiche({
         parents={parents}
         siblings={siblingNodes}
         spouses={spouses}
-        children={children ?? []}
+        children={childNodes}
         photos={photos}
       />
 

@@ -27,20 +27,6 @@ export type SearchHit = {
   sex: string | null;
 };
 
-export type Sibling = {
-  id: string;
-  first_name: string;
-  last_name: string;
-  married_name: string | null;
-  birth_display: string | null;
-  death_display: string | null;
-  deceased: boolean;
-  photo_url: string | null;
-  sex: string | null;
-  branch_id: number | null;
-  kind: "fratrie" | "demi";
-};
-
 /**
  * « Marie Durand (née Vernet) » — le nom d'usage prime à l'affichage.
  * L'accord suit le sexe enregistré ; quand il est inconnu on écrit la forme
@@ -120,7 +106,7 @@ export function age(
 }
 
 /** « 4.05.87 » → 4 mai 1987 · « 1908 » → 1908, imprécis · « vers 1890 » → imprécis. */
-function lireDate(texte?: string | null): { d: Date; precise: boolean } | null {
+export function lireDate(texte?: string | null): { d: Date; precise: boolean } | null {
   if (!texte) return null;
   const complet = texte.match(/(\d{1,2})\s*\.\s*(\d{1,2})\s*\.\s*(\d{2,4})/);
   if (complet) {
@@ -184,3 +170,7 @@ export function lifeSpan(p: {
   if (death) return `? – ${death}`;
   return p.deceased ? "†" : "";
 }
+
+/** « de Charles » mais « d'Anne » : l'élision devant une voyelle ou un h. */
+export const de = (prenom: string) =>
+  /^[aeiouyhéèêàâîôûAEIOUYHÉÈÊÀÂÎÔÛ]/.test(prenom) ? `d'${prenom}` : `de ${prenom}`;

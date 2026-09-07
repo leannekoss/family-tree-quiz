@@ -1,9 +1,8 @@
-import { Fragment } from "react";
 import Link from "next/link";
 import Avatar from "@/components/Avatar";
 import BoutonRetour from "@/components/BoutonRetour";
 import { couleurDeId } from "@/lib/branches";
-import { shortName, lifeSpan, ageLisible, parAinesse } from "@/lib/types";
+import { shortName, lifeSpan, ageLisible, parAinesse, de } from "@/lib/types";
 
 type Node = {
   id: string;
@@ -18,6 +17,9 @@ type Node = {
   tag?: string | null;
   /** 'mariage' ou 'union' — porté par les conjoints seulement. */
   kind?: string | null;
+  /** Fratrie : « de Charles, avec Diana » pour un demi-frère, vide pour un
+      frère entier. Enfants : « avec Diana », le co-parent. */
+  groupe?: string | null;
 };
 
 /**
@@ -46,100 +48,181 @@ export default function LocalTree({
 }) {
   const shared = { photos };
 
+  // La fratrie se range en trois blocs, de haut en bas : les frères et sœurs
+  // entiers, puis chaque groupe de demi-frères sous un sous-titre qui nomme
+  // ses deux parents, puis la personne avec ses conjoints, TOUJOURS en
+  // dernière ligne, juste au-dessus de ses enfants.
+  //
+  // Deux lectures fautives ont conduit là. Une tante a lu une demi-sœur
+  // comme la fille de la seconde épouse : posée sous les deux parents de
+  // la fiche, rien ne disait lequel était le sien. Un sous-titre « Aussi
+  // enfant de Charles, avec Diana » le dit en français, sans code ni
+  // légende. Et sur la fiche d'un père remarié, son cadet tombait sous le
+  // couple, juste au-dessus du trait vers « Enfants de … » : l'auteur l'a
+  // lu comme un fils. Une carte de frère ne doit jamais être la dernière
+  // chose au-dessus des enfants ; c'est la personne qui l'est.
+  //
+  // Le prix : avec un conjoint, la personne quitte l'ordre d'aînesse — ses
+  // frères entiers sont sur la ligne du dessus. Sans conjoint, elle garde sa
+  // place parmi eux, du plus grand au plus petit.
+  const entiers = siblings.filter((n) => !n.groupe).sort(parAinesse);
+  const groupes = new Map<string, Node[]>();
+  for (const n of [...siblings].sort(parAinesse)) {
+    if (n.groupe) groupes.set(n.groupe, [...(groupes.get(n.groupe) ?? []), n]);
+  }
+  const couple = spouses.length > 0;
+
   return (
     <div className="rounded-xl border border-line bg-card px-3 py-5">
       <Row label="Parents" nodes={parents} direction="up" {...shared} />
       {parents.length > 0 && <Descente />}
 
-      {/* La personne et son conjoint côte à côte, reliés par l'anneau. Sans ce
-          signe, un conjoint posé à côté se lit comme un frère : même taille,
-          même cadre, même rangée.
-
-          L'anneau est posé DANS la rangée, pas dans un conteneur qui
-          envelopperait la carte : la largeur des cartes vaut « la moitié de la
-          rangée », et une carte enfermée dans une boîte intermédiaire calculait
-          sa moitié sur cette boîte-là. Le conjoint tombait à 65 px sur un
-          téléphone — assez pour rogner « Eric Degrémont » — alors que tout
-          paraissait juste sur un écran large, où la contrainte ne mord pas. */}
-      {/* Frères, sœurs et conjoint dans UNE seule rangée, avec la personne.
-          Ils étaient dans une rangée à part, posée sous elle et juste au-dessus
-          du trait qui descend vers les enfants : on lisait donc la sœur de Yann
-          comme sa fille. Trois signes disaient « descendance » à la fois — la
-          position en dessous, le trait qui suivait, et la taille identique aux
-          cartes d'enfants.
-
-          Une génération se lit sur une ligne. C'est ainsi qu'on la dessine sur
-          un arbre papier, et c'est la seule disposition qui ne demande aucune
-          explication. */}
       {siblings.length > 0 && (
         <p className="mb-2 text-center text-xs uppercase tracking-wide text-muted">
           Sa génération
         </p>
       )}
-      {/* La rangée se lit de l'aîné au benjamin, la personne courante prenant
-          sa place dans l'ordre plutôt que la première : c'est ainsi qu'on
-          dessine une fratrie à la main, et c'est la seule disposition qui
-          répond sans un mot à « lequel est le grand ? ». Ses conjoints la
-          suivent immédiatement, où qu'elle tombe — l'anneau ⚭ ne vaut que
-          collé à elle. */}
-      <div className="flex flex-wrap items-center justify-center gap-2">
-        {[person, ...siblings].sort(parAinesse).map((n) =>
-          n.id === person.id ? (
-            // Le couple prend SA PROPRE LIGNE dans la rangée dès qu'il y a un
-            // conjoint. L'ancien réglage faisait partager au trio « l'espace
-            // restant » à côté des frères et sœurs : pensé pour un conjoint,
-            // il écrasait les cartes dès le deuxième — Jacqueline et ses deux
-            // compagnons tenaient dans une colonne, noms tronqués à
-            // « cqueli ». `basis-full` garde l'ordre d'aînesse : la ligne se
-            // brise autour du couple, elle ne le déplace pas.
-            <div
-              key={n.id}
-              className={
-                spouses.length > 0
-                  ? "flex basis-full flex-wrap items-center justify-center gap-2"
-                  : "contents"
-              }
-            >
-              <Card node={person} current partage={spouses.length > 0} {...shared} />
-              {spouses.map((s) => (
-                <Fragment key={s.id}>
-                  {/* ⚭ est le symbole du mariage : le poser entre deux
-                      personnes qui vivent ensemble sans être mariées leur
-                      prête une situation qu'elles n'ont pas choisie.
-                      L'esperluette dit le couple sans rien affirmer de plus. */}
-                  <span
-                    aria-hidden
-                    className="serif shrink-0 text-lg text-muted"
-                    title={s.kind === "union" ? "en couple avec" : "marié à"}
-                  >
-                    {s.kind === "union" ? "&" : "⚭"}
-                  </span>
-                  <Card node={s} partage {...shared} />
-                </Fragment>
-              ))}
-            </div>
-          ) : (
+
+      {couple && entiers.length > 0 && (
+        <div className="mb-2 flex flex-wrap justify-center gap-2">
+          {entiers.map((n) => (
             <Card key={n.id} node={n} {...shared} />
-          ),
+          ))}
+        </div>
+      )}
+
+      {[...groupes].map(([groupe, nodes]) => (
+        <div key={groupe} className="mb-2">
+          <p className="mb-1 text-center text-sm text-muted">
+            Aussi {nodes.length > 1 ? "enfants" : "enfant"} {groupe}
+          </p>
+          <div className="flex flex-wrap justify-center gap-2">
+            {nodes.map((n) => (
+              <Card key={n.id} node={n} {...shared} />
+            ))}
+          </div>
+        </div>
+      ))}
+
+      {/* La ligne de la personne. Avec des conjoints, elle et eux seuls,
+          reliés par le signe de l'union puis par « puis » : « Charles &
+          Diana puis Camilla » dit deux compagnes l'une après l'autre, pas
+          un trio. ⚭ est le symbole du mariage : le poser entre deux personnes
+          qui vivent ensemble sans être mariées leur prête une situation
+          qu'elles n'ont pas choisie. L'esperluette dit le couple sans rien
+          affirmer de plus. */}
+      <div className="flex flex-wrap items-center justify-center gap-2">
+        {couple ? (
+          <>
+            <Card node={person} current partage {...shared} />
+            {/* Le signe et la carte du conjoint forment un bloc insécable :
+                à 375 px la ligne se replie, et « puis » rejeté en bout de
+                ligne laissait Camilla seule, centrée, juste au-dessus des
+                enfants — la configuration même qui faisait lire un frère
+                comme un fils. Le conjoint qui passe à la ligne emporte son
+                « puis » avec lui. */}
+            {spouses.map((sp, i) => (
+              <span key={sp.id} className="flex min-w-0 items-center gap-2">
+                <span
+                  aria-hidden
+                  className="serif shrink-0 text-lg text-muted"
+                  title={i > 0 ? "puis" : sp.kind === "union" ? "en couple avec" : "marié à"}
+                >
+                  {i > 0 ? "puis" : sp.kind === "union" ? "&" : "⚭"}
+                </span>
+                <Card node={sp} partage {...shared} />
+              </span>
+            ))}
+          </>
+        ) : (
+          [person, ...entiers]
+            .sort(parAinesse)
+            .map((n) =>
+              n.id === person.id ? (
+                <Card key={n.id} node={person} current {...shared} />
+              ) : (
+                <Card key={n.id} node={n} {...shared} />
+              ),
+            )
         )}
       </div>
 
-      {children.length > 0 && <Descente />}
+      {/* Pas de trait sous un couple : centré sur la rangée, il tomberait
+          sous Diana. Le titre « Enfants de Charles » porte le lien. */}
+      {/* Le trait ne descend que d'une personne seule sur sa ligne : centré
+          sur la rangée, il tomberait sous un conjoint ou sous un frère.
+          Sinon un filet tient sa place — sans rien, le titre « Enfants
+          de … » touchait la dernière carte. */}
+      {children.length > 0 &&
+        (!couple && entiers.length === 0 ? (
+          <Descente />
+        ) : (
+          <div className="mx-auto my-4 h-px w-1/2 bg-line" />
+        ))}
       {/* « Enfants » tout court laissait le doute sur le parent : nommer la
           personne le lève définitivement, et le prénom suffit — c'est celui de
           la fiche qu'on lit. */}
       {/* Les enfants aussi, par ordre de naissance : une fratrie se récite dans
-          cet ordre-là dans toutes les familles. */}
-      <Row
-        label={`Enfants de ${person.first_name}`}
-        nodes={[...children].sort(parAinesse)}
-        direction="down"
-        {...shared}
-      />
+          cet ordre-là dans toutes les familles. Avec plusieurs co-parents,
+          une ligne par co-parent, sous-titrée « avec Diana ». */}
+      {children.length > 0 && (
+        <Groupes
+          label={`Enfants ${de(person.first_name)}`}
+          nodes={[...children].sort(parAinesse)}
+          direction="down"
+          conjoints={spouses.length}
+          {...shared}
+        />
+      )}
 
       <div className="mt-4 flex justify-center">
         <BoutonRetour />
       </div>
+    </div>
+  );
+}
+
+/** La rangée Enfants : une seule ligne, ou une ligne par co-parent. Le
+    sous-titre apparaît aussi quand la page montre plusieurs conjoints et
+    un seul co-parent : « Charles & Diana puis Camilla » suivi de William
+    sans un mot laisserait deviner de laquelle elle est. */
+function Groupes({
+  label,
+  nodes,
+  photos,
+  direction,
+  conjoints,
+}: {
+  label: string;
+  nodes: Node[];
+  photos: Map<string, string>;
+  direction?: "up" | "down";
+  conjoints: number;
+}) {
+  const groupes = new Map<string, Node[]>();
+  for (const n of nodes) {
+    const k = n.groupe ?? "";
+    groupes.set(k, [...(groupes.get(k) ?? []), n]);
+  }
+  if (groupes.size < 2 && conjoints < 2) {
+    return <Row label={label} nodes={nodes} photos={photos} direction={direction} />;
+  }
+  return (
+    <div>
+      <p className="mb-2 text-center text-xs uppercase tracking-wide text-muted">
+        {label}
+        <span className="normal-case"> · {nodes.length}</span>
+      </p>
+      {[...groupes].map(([groupe, enfants]) => (
+        <div key={groupe} className="mb-2">
+          <p className="mb-1 text-center text-sm text-muted">{groupe}</p>
+          <div className="flex flex-wrap justify-center gap-2">
+            {enfants.map((n) => (
+              <Card key={n.id} node={n} photos={photos} direction={direction} />
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
@@ -208,9 +291,7 @@ function Card({
         <span className="block text-xs text-muted">{ageLisible(node)}</span>
       )}
       {node.tag && (
-        <span className="mt-0.5 block text-[11px] uppercase tracking-wide text-muted">
-          {node.tag}
-        </span>
+        <span className="mt-0.5 block text-[11px] text-muted">{node.tag}</span>
       )}
     </>
   );
